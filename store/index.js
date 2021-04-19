@@ -12,6 +12,10 @@ const store = new Vuex.Store({//全局变量定义
         userId:'',
         token:'',
         pointId:'',
+		empId: '',
+		deptName: '',
+		deptID: '',
+		deptNumber: '',
     },
     mutations: {
         login(state, user) {
@@ -19,6 +23,10 @@ const store = new Vuex.Store({//全局变量定义
             state.password = user.password || '';
             state.hasLogin = true;
             state.userId = user.id || '';
+            state.empId = user.empId || '';
+            state.deptName = user.deptName || '';
+            state.deptID = user.deptID || '';
+            state.deptNumber = user.deptNumber || '';
             state.token = user.token || '';
         },
         logout(state) {

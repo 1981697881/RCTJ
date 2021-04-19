@@ -35,14 +35,12 @@ export default {
 						login
 							.login(data)
 							.then(res => {
-								console.log(123);
-								console.log(res);
 								if (res.success) {
 									data.userId = res.data['userId'];
 									data.username = res.data['username'];
 									store.commit('login', data);
 									service.clearUser();
-									service.addUser(data);
+									service.addUser(res.data);
 								}
 							})
 							.catch(err => {
@@ -99,7 +97,6 @@ export default {
 				}
 			}
 		});
-		console.log(123)
 		uni.$on('scancodedate',function(data){
 		     // _this 这里面的方法用这个 _this.code(data.code)  
 		 console.log('你想要的code：', data.code)  

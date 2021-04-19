@@ -225,9 +225,7 @@
 						icon: 'none',
 						title: res.msg,
 					});
-					data.userId = res.data['userId']
-					data.username =res.data['username']
-					this.toMain(data);
+					this.toMain(res.data);
 				}).catch(err => {
 					uni.showToast({
 						icon: 'none',

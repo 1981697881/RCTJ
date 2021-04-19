@@ -26,9 +26,9 @@
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
 			<view v-for="(item, index) in cuIconList" :key="index">
 				<view class="cu-list menu-avatar">
-					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 260upx;">
+					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 200upx;">
 						<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="$manyCk(showList(index, item))" data-target="Modal" data-number="item.number">
-							<view class="text-grey">日期:{{ item.FDate }}</view>
+							<view class="text-grey">日期:{{ item.Fdate }}</view>
 							<view class="text-grey">单号:{{ item.FBillNo }}</view>
 							<view class="text-grey">产品编码:{{ item.FPrdNumber }}</view>
 							<view class="text-grey">产品名称:{{ item.FPrdItemName }}</view>
@@ -37,9 +37,6 @@
 							<view class="text-grey">名称:{{ item.FItemName }}</view>
 							<view class="text-grey">规格:{{ item.FModel }}</view>
 							<!-- <view class="text-grey">数量:{{item.Fauxqty}}</view> -->
-							<view class="text-grey">金蝶号:{{ item.FKDNo }}</view>
-							<view class="text-grey">流程卡号:{{ item.FCardNum }}</view>
-							<view class="text-grey" style="width: 100%;">线路名称:{{ item.FTranWay }}</view>
 						</view>
 					</view>
 				</view>
@@ -86,14 +83,14 @@ export default {
 		// 列表数据默认加载
 		_self = this;
 		if (JSON.stringify(option) != '{}') {
-			this.start = this.getDay('', -3).date;
+			this.start = this.getDay('', -30).date;
 			this.end = this.getDay('', 0).date;
 			if (option.source != null) {
 				this.source = option.source;
 			}
 			this.getNewsList();
 		} else {
-			this.start = this.getDay('', -3).date;
+			this.start = this.getDay('', -30).date;
 			this.end = this.getDay('', 0).date;
 			this.getNewsList();
 		}
@@ -206,7 +203,7 @@ export default {
 					item.FBillNo +
 					'&tranType=' +
 					this.source +
-					'&type=2&startDate=' +
+					'&type=3&startDate=' +
 					this.start +
 					'&endDate=' +
 					this.end +
@@ -277,7 +274,7 @@ export default {
 			this.start != null && this.start != undefined ? (obj.startDate = this.start) : null;
 			this.end != null && this.end != undefined ? (obj.endDate = this.end) : null;
 			obj.tranType = this.source;
-			obj.type = 2;
+			obj.type = 3;
 			obj.pageSize = 20;
 			obj.pageNum = 1;
 			return obj;

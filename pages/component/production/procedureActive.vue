@@ -2,8 +2,9 @@
 	<view>
 		<cu-custom bgColor="bg-gradual-blue" class="customHead" :isBack="true">
 			<block slot="backText">返回</block>
-			<block slot="content">领料</block>
+			<block slot="content">领料(工序)</block>
 		</cu-custom>
+		<uni-fab :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" cuIcon="scan" distable :direction="direction" @fabClick="fabClick"></uni-fab>
 		<view class="box getheight">
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
@@ -26,35 +27,35 @@
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
 			<view v-for="(item, index) in cuIconList" :key="index">
 				<view class="cu-list menu-avatar">
-					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 260upx;">
+					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 200upx;">
 						<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="$manyCk(showList(index, item))" data-target="Modal" data-number="item.number">
-							<view class="text-grey">日期:{{ item.FDate }}</view>
+							<view class="text-grey">日期:{{ item.Fdate }}</view>
 							<view class="text-grey">单号:{{ item.FBillNo }}</view>
-							<view class="text-grey">产品编码:{{ item.FPrdNumber }}</view>
-							<view class="text-grey">产品名称:{{ item.FPrdItemName }}</view>
-							<view class="text-grey">产品规格:{{ item.FPrdModel }}</view>
 							<view class="text-grey">编码:{{ item.FItemNumber }}</view>
 							<view class="text-grey">名称:{{ item.FItemName }}</view>
 							<view class="text-grey">规格:{{ item.FModel }}</view>
-							<!-- <view class="text-grey">数量:{{item.Fauxqty}}</view> -->
-							<view class="text-grey">金蝶号:{{ item.FKDNo }}</view>
-							<view class="text-grey">流程卡号:{{ item.FCardNum }}</view>
-							<view class="text-grey" style="width: 100%;">线路名称:{{ item.FTranWay }}</view>
+							<view class="text-grey">数量:{{ item.Fauxqty }}</view>
+							<view class="text-grey">制单人:{{ item.Fbiller }}</view>
+							<view class="text-grey">片数:{{ item.fqty }}</view>
 						</view>
 					</view>
 				</view>
 			</view>
 		</scroll-view>
-		<text v-if="isShow" class="loading-text">{{ loadingType === 0 ? contentText.contentdown : loadingType === 1 ? contentText.contentrefresh : contentText.contentnomore }}</text>
+		<text v-if="isShow" class="loading-text">
+			{{ loadingType === 0 ? contentText.contentdown : loadingType === 1 ? contentText.contentrefresh : contentText.contentnomore }}
+		</text>
 	</view>
 </template>
+
 <script>
 import ruiDatePicker from '@/components/rattenking-dtpicker/rattenking-dtpicker.vue';
 import basic from '@/api/basic';
+import uniFab from '@/components/uni-fab/uni-fab.vue';
 var _self,
 	page = 1;
 export default {
-	components: { ruiDatePicker },
+	components: { ruiDatePicker, uniFab },
 	data() {
 		return {
 			loadingType: 0,
@@ -63,11 +64,21 @@ export default {
 				contentrefresh: '正在加载...',
 				contentnomore: '没有更多数据了'
 			},
+			horizontal: 'right',
+			vertical: 'bottom',
+			popMenu: false,
+			direction: 'horizontal',
+			pattern: {
+				color: '#7A7E83',
+				backgroundColor: '#fff',
+				selectedColor: '#007AFF',
+				buttonColor: '#007AFF'
+			},
 			isShow: true,
 			start: '',
 			end: '',
-			onoff: true,
 			keyword: '',
+			onoff: true,
 			pageHeight: 0,
 			cuIconList: []
 		};
@@ -86,14 +97,14 @@ export default {
 		// 列表数据默认加载
 		_self = this;
 		if (JSON.stringify(option) != '{}') {
-			this.start = this.getDay('', -3).date;
+			this.start = this.getDay('', -30).date;
 			this.end = this.getDay('', 0).date;
 			if (option.source != null) {
 				this.source = option.source;
 			}
 			this.getNewsList();
 		} else {
-			this.start = this.getDay('', -3).date;
+			this.start = this.getDay('', -30).date;
 			this.end = this.getDay('', 0).date;
 			this.getNewsList();
 		}
@@ -129,7 +140,7 @@ export default {
 	},
 	// 上拉加载
 	onReachBottom: function() {
-		this.isShow = false
+		this.isShow = false;
 		page++; //每触底一次 page +1
 		// console.log(_self.cuIconList.length);
 		if (_self.loadingType != 0) {
@@ -139,32 +150,32 @@ export default {
 		_self.loadingType = 1;
 		// console.log(page);
 		uni.showNavigationBarLoading(); //显示加载动画
-		let obj = this.qFilter()
-		obj.pageNum = page
+		let obj = this.qFilter();
+		obj.pageNum = page;
 		basic
 			.getOrderList(obj)
 			.then(res => {
 				if (res.success) {
-					console.log(res)
+					console.log(res);
 					if (_self.cuIconList.length == res.data.total) {
 						//没有数据
 						_self.loadingType = 2;
 						uni.hideNavigationBarLoading(); //关闭加载动画
 						return false;
 					}
-					if(res.data.list.length>0){
-						let dList = res.data.list
-						dList.forEach((item,index) => {
-							_self.cuIconList.push(item)
-						})
-					} 
+					if (res.data.list.length > 0) {
+						let dList = res.data.list;
+						dList.forEach((item, index) => {
+							_self.cuIconList.push(item);
+						});
+					}
 					/* for (var i = _self.cuIconList.length; i < res.data.total; i++) {
-						_self.cuIconList = _self.cuIconList.concat(res.data.list[i - 1]); //将数据拼接在一起
-					} */
+							_self.cuIconList = _self.cuIconList.concat(res.data.list[i - 1]); //将数据拼接在一起
+						} */
 					_self.loadingType = 0; //将loadingType归0重置
 					uni.hideNavigationBarLoading(); //关闭加载动画
 					uni.stopPullDownRefresh(); //得到数据后停止下拉刷新
-					this.isShow = true
+					this.isShow = true;
 				}
 			})
 			.catch(err => {
@@ -177,7 +188,7 @@ export default {
 	methods: {
 		// 产品列表数据
 		getNewsList: function() {
-		   //第一次回去数据
+			//第一次回去数据
 			_self.loadingType = 0;
 			uni.showNavigationBarLoading();
 			const me = this;
@@ -189,7 +200,7 @@ export default {
 						_self.cuIconList = res.data.list;
 						uni.hideNavigationBarLoading();
 						uni.stopPullDownRefresh(); //得到数据后停止下拉刷新
-					} 
+					}
 				})
 				.catch(err => {
 					uni.showToast({
@@ -200,9 +211,9 @@ export default {
 		},
 		showList(index, item) {
 			uni.navigateTo({
-				//url: '../production/receivePassive?Fdate='+item.FDate+'&FBillNo='+item.FBillNo+'&FNumber='+item.FItemNumber+'&FItemName='+item.FItemName+'&FModel='+item.FModel+'&Fauxqty='+item.Fauxqty+'&fsourceBillNo='+item.FBillNo+'&fsourceEntryID='+item.FEntryID+'&fsourceTranType='+item.FTranType+'&unitNumber='+item.FUnitNumber+'&FUnitName='+item.FUnitName+'&Famount='+item.Famount+'&Fauxprice='+item.Fauxprice+'&FDeptNumber='+item.FDeptNumber,
+				//url: '../production/productPassive?Fdate='+item.Fdate+'&FBillNo='+item.FBillNo+'&FNumber='+item.FItemNumber+'&FItemName='+item.FItemName+'&FModel='+item.FModel+'&Fauxqty='+item.Fauxqty+'&fsourceBillNo='+item.FBillNo+'&fsourceEntryID='+item.FSourceEntryID+'&fsourceTranType='+item.FTranType+'&unitNumber='+item.FUnitNumber+'&FUnitName='+item.FUnitName+'&Famount='+item.Famount+'&Fauxprice='+item.Fauxprice,
 				url:
-					'../production/receivePassive?billNo=' +
+					'../production/procedurePassive?billNo=' +
 					item.FBillNo +
 					'&tranType=' +
 					this.source +
@@ -219,7 +230,6 @@ export default {
 			basic
 				.getOrderList(this.qFilter())
 				.then(res => {
-					console.log(res);
 					if (res.success) {
 						me.cuIconList = res.data.list;
 					}
@@ -259,7 +269,7 @@ export default {
 		},
 		inputChange(e) {
 			this.keyword = e.detail.value;
-			this.this.getNewsList(e.detail.value);
+			this.getNewsList(e.detail.value);
 		},
 		compareDate(date1, date2) {
 			var oDate1 = new Date(date1);
@@ -280,6 +290,7 @@ export default {
 			obj.type = 2;
 			obj.pageSize = 20;
 			obj.pageNum = 1;
+			console.log(obj)
 			return obj;
 		},
 		bindChange1(e) {
@@ -292,8 +303,7 @@ export default {
 			const me = this;
 			if (this.start.length > 5 && this.end.length > 5) {
 				if (!this.compareDate(this.start, this.end)) {
-					console.log(JSON.stringify(this.qFilter()));
-					me.getNewsList()
+					me.getNewsList();
 				} else {
 					uni.showToast({
 						icon: 'none',
@@ -308,6 +318,16 @@ export default {
 				});
 				return;
 			}
+		},
+		fabClick() {
+			var that = this;
+			uni.scanCode({
+				success: function(res) {
+					that.keyword = '';
+					that.keyword = res.result.substr(0, 10);
+					that.search();
+				}
+			});
 		}
 	}
 };

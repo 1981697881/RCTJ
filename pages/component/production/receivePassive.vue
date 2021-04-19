@@ -6,7 +6,6 @@
 			<block slot="content">领料</block>
 		</cu-custom>
 		<!-- <uni-fab v-if="!isOrder" :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" distable :direction="direction" @fabClick="fabClick"></uni-fab> -->
-		<zhilin-picker v-model="show" :data="chooseList" :title="title" @confirm="chooseClick" />
 		<view class="box getheight">
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
@@ -18,18 +17,31 @@
 					<ruiDatePicker fields="day" class="ruidata" start="2010-00-00" end="2030-12-30" :value="form.fdate" @change="bindChange"></ruiDatePicker>
 				</view>
 				<view class="action">
-					包数:
+					行数:
 					<text>{{ form.bNum }}</text>
 				</view>
 			</view>
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
-				<view class="action">
+				<!-- <view class="action">
 					<view style="width: 90px;">部门:</view>
 					<ld-select :list="deptList" list-key="FName" value-key="FNumber" placeholder="请选择" clearable v-model="form.fdeptID" @change="deptChange"></ld-select>
+				</view> -->
+				<view class="action">
+					<view style="width: 90px;">部门:</view>
+					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
 				</view>
 				<view class="action">
 					<view style="width: 90px;">仓库:</view>
-					<ld-select :list="stockList" disabled list-key="FName" value-key="FNumber" placeholder="请选择" clearable v-model="form.fdCStockId" @change="stockChange"></ld-select>
+					<ld-select
+						:list="stockList"
+						disabled
+						list-key="FName"
+						value-key="FNumber"
+						placeholder="请选择"
+						clearable
+						v-model="form.fdCStockId"
+						@change="stockChange"
+					></ld-select>
 				</view>
 			</view>
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
@@ -57,7 +69,7 @@
 			</view>
 		</view>
 		<view class="cu-modal" :class="modalName2 == 'Modal' ? 'show' : ''">
-			<view class="cu-dialog" style="height: 420upx;">
+			<view class="cu-dialog" style="height: 460upx;">
 				<view class="cu-bar bg-white justify-end" style="height: 60upx;">
 					<view class="content">{{ popupForm.headName }}</view>
 					<view class="action" @tap="hideModal2"><text class="cuIcon-close text-red"></text></view>
@@ -72,7 +84,8 @@
 								</view>
 							</view>
 						</view>
-					</view><view class="cu-item" style="width: 100%;">
+					</view>
+					<view class="cu-item" style="width: 100%;">
 						<view class="flex">
 							<view class="flex-sub">
 								<view class="cu-form-group">
@@ -81,7 +94,6 @@
 									<button class="cu-btn round lines-red line-red shadow" @tap="$manyCk(scanBatchNo)">扫码</button>
 								</view>
 							</view>
-							
 						</view>
 					</view>
 					<view class="cu-item" style="width: 100%;">
@@ -105,7 +117,7 @@
 			</view>
 		</view>
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
-			<!-- <view v-for="(item, index) in cuIList" :key="index">
+			<view v-for="(item, index) in cuIList" :key="index">
 				<view class="cu-list menu-avatar">
 					<view
 						class="cu-item"
@@ -116,17 +128,19 @@
 						@touchend="ListTouchEnd"
 						:data-target="'move-box-' + index"
 					>
-						<view style="clear: both;width: 100%;" class="grid text-center col-2" @tap="showModal2(index, item)" data-target="Modal" data-number="item.number">
-							<view class="text-grey">序号:{{ (item.index = index + 1) }}</view>
-							<view class="text-grey">编码:{{ item.number }}</view>
-							<view class="text-grey">名称:{{ item.name }}</view>
-							<view class="text-grey">数量:{{ item.quantity }}</view>
-							<view class="text-grey">批号:{{ item.fbatchNo }}</view>
-							<view class="text-grey">单位:{{ item.unitName }}</view>
-							<view class="text-grey">规格:{{ item.model }}</view>
-							<view class="text-grey">仓位:{{ item.positions }}</view>
-							<view class="text-grey">{{ item.stockName }}</view>
-							<view class="text-grey">
+						<view style="clear: both;width: 100%;">
+							<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="showModal2(index, item)" data-target="Modal" data-number="item.number">
+								<view class="text-grey">序号:{{ (item.index = index + 1) }}</view>
+								<view class="text-grey">编码:{{ item.number }}</view>
+								<view class="text-grey">名称:{{ item.name }}</view>
+								<view class="text-grey">数量:{{ item.quantity }}</view>
+								<view class="text-grey">批号:{{ item.fbatchNo }}</view>
+								<view class="text-grey">单位:{{ item.unitName }}</view>
+								<view class="text-grey">规格:{{ item.model }}</view>
+								<view class="text-grey">库位:{{ item.positions }}</view>
+								<view class="text-grey">{{ item.stockName }}</view>
+							</view>
+							<view class="text-grey text-center">
 								<picker @change="PickerChange($event, item)" :value="pickerVal" :range-key="'FName'" :range="stockList">
 									<view class="picker">
 										<button class="cu-btn sm round bg-green shadow">
@@ -138,52 +152,6 @@
 							</view>
 						</view>
 						<view class="move"><view class="bg-red" @tap="del(index, item)">删除</view></view>
-					</view>
-				</view>
-			</view> -->
-			<view class="selectTrees">
-				<!-- 一级分支 -->
-				<view class="lv1list" v-for="(item, index) in cuIList" :key="index" @longpress="deleteItem(index, item)">
-					<view class="tree-one" style="background: white;width: 100%;margin-top: 2px;height: 150upx;">
-						<!-- 单选框组件 -->
-						<checkbox-group v-if="showCheck" style="position: absolute;height: 80rpx;line-height: 150upx; left:20rpx;z-index: 1;">
-							<checkbox :checked="item.checked" @click="_chooseAll(item, index)" />
-						</checkbox-group>
-						<!-- 名字和iconfont -->
-						<label style="height:100%;display: flex;align-items: center;padding: 20rpx;position: relative;border-bottom: 1px solid #e4e4e4;" @click="_showlv2(index)">
-							<view style="clear: both;width: 100%;" class="grid text-center col-2">
-								<view class="itemT">编码:{{ item.number }}</view>
-								<view class="itemT">名称:{{ item.name }}</view>
-								<view class="itemT">单位:{{ item.unitName }}</view>
-								<view class="itemT">规格:{{ item.model }}</view>
-								<view class="itemT">应发数量:{{ item.Fauxqty }}</view>
-								<view class="itemT">实际数量:{{ item.FCounty }}</view>
-							</view>
-							<!-- <view class="deleteBtn" v-if="showDelete" @click.stop="deleteItem(item, index)">删除</view> -->
-							<i class="cuIcon-unfold" v-if="item.show" style="position: absolute;top: 40%;right: 2%;font-size: 48rpx;"></i>
-							<i class="cuIcon-fold" v-else style="position: absolute;top: 40%;right: 2%;font-size: 48rpx;"></i>
-						</label>
-					</view>
-					<!-- 二级分支 -->
-					<view v-if="item.show && item.childrenList">
-						<view class="tree-two" v-for="(item2, index2) in item.childrenList" :key="index2" style="display: flex;">
-							<view class="aui-list-item-inner flexIn">
-								<checkbox-group v-if="showCheck">
-									<checkbox v-if="!disableLv2Check" :checked="item2.checked" @click="_chooseOne(index, index2)" />
-									<checkbox :checked="item2.checked" disabled="true" v-else />
-								</checkbox-group>
-								<view style="clear: both;width: 100%;" class="grid text-center col-2">
-									<view class="itemO">批号:{{ item2.FBatchNo}}</view>
-									<view class="itemO">仓库:{{ item2.FStockName}}</view>
-									<view class="itemO">仓位:{{ item2.FStockPlacename }}</view>
-									<view class="itemO">库存数:{{ item2.FQty }}</view>
-									<view class="itemO" style="width: 80% !important;">
-										<view class="title" style="float: left;margin-left: 25%;" >出库数:</view>
-										<input name="input" @input='setQuty($event, index)' type="digit" style="font-size: 13px;text-align: left;border-bottom: 1px solid;" v-model="item2.quantity" />
-									</view>
-								</view>
-							</view>
-						</view>
 					</view>
 				</view>
 			</view>
@@ -204,27 +172,9 @@ import basic from '@/api/basic';
 import production from '@/api/production';
 import service from '@/service.js';
 import loading from '@/components/loading';
-import selectTree from '@/components/select-tree/select-tree';
-import zhilinPicker from '@/components/zhilin-picker/zhilin-picker.vue';
 export default {
-	components: { zhilinPicker,selectTree, ruiDatePicker, ldSelect, uniFab, loading },
-	props: {
-		showCheck: {
-			//显示多选框
-			type: Boolean,
-			default: true
-		},
-		disableLv2Check: {
-			//让二级标题不可选中
-			type: Boolean,
-			default: false
-		},
-		showDelete: {
-			//显示删除按钮
-			type: Boolean,
-			default: true
-		}
-	},
+	components: { ruiDatePicker, ldSelect, uniFab, loading },
+
 	data() {
 		return {
 			finalList: [],
@@ -239,6 +189,8 @@ export default {
 			loadModal: false,
 			pickerVal: null,
 			modalName: null,
+			fdeptName: '',
+			deptNumber: '',
 			modalName2: null,
 			gridCol: 3,
 			form: {
@@ -280,10 +232,12 @@ export default {
 	onLoad: function(option) {
 		let me = this;
 		me.loadModal = true;
+		me.fdeptName = service.getUsers()[0].deptName;
+		me.deptNumber = service.getUsers()[0].deptNumber;
+		me.form.fdeptID = service.getUsers()[0].deptNumber;
 		me.initMain();
 		if (JSON.stringify(option) != '{}') {
 			this.isOrder = true;
-			me.form.fdeptID = option.FDeptNumber;
 			this.startDate = option.startDate;
 			this.endDate = option.endDate;
 			this.billNo = option.billNo;
@@ -297,10 +251,11 @@ export default {
 				.then(res => {
 					if (res.success) {
 						let data = res.data.list;
-						console.log(data);
 						for (let i in data) {
 							me.cuIList.push({
 								Fdate: data[i].Fdate,
+								stockName: data[i].FDCStockName,
+								stockId: data[i].FDCStockNumber,
 								number: data[i].FItemNumber,
 								name: data[i].FItemName,
 								model: data[i].FModel,
@@ -364,187 +319,28 @@ export default {
 		}
 	},
 	methods: {
-		setQuty(val, index){
-			let list = this.cuIList[index].childrenList
-			let count = 0
-			list.forEach((item, index)=>{
-				if(item.checked){
-					if(item.quantity<= item.FQty){
-						if(item.quantity != '' && item.quantity != null){
-							count += Number(item.quantity)
+		setQuty(val, index) {
+			let list = this.cuIList[index].childrenList;
+			let count = 0;
+			list.forEach((item, index) => {
+				if (item.checked) {
+					if (item.quantity <= item.FQty) {
+						if (item.quantity != '' && item.quantity != null) {
+							count += Number(item.quantity);
 						}
-					}else{
+					} else {
 						uni.showToast({
 							icon: 'none',
 							title: '输入数量不能大于库数量'
 						});
 					}
-					
-				}
-			})
-			this.cuIList[index].FCounty = count
-		},
-		_showlv2(index) {
-			if(this.cuIList[index].isLoading){
-				//展开二级目录
-				if (this.cuIList[index].show) {
-					this.$set(this.cuIList[index], 'show', false);
-				} else {
-					this.$set(this.cuIList[index], 'show', true);
-				}
-			}else{
-				basic
-					.selectInvListByItemNumber({ itemNumber: this.cuIList[index].number })
-					.then(reso => {
-						if (reso.success) {
-							let data = reso.data;
-							data.forEach((item, index) =>{
-								item.quantity = 0
-								item.checked = false
-							})
-							this.cuIList[index].isLoading = true
-							this.cuIList[index].childrenList = data;
-							//展开二级目录
-							if (this.cuIList[index].show) {
-								this.$set(this.cuIList[index], 'show', false);
-							} else {
-								this.$set(this.cuIList[index], 'show', true);
-							}
-							this.$forceUpdate();
-						}
-					})
-					.catch(err => {
-						uni.showToast({
-							icon: 'none',
-							title: err.msg
-						});
-					});
-			}
-		},
-		_chooseAll(item, index) {
-			if(this.cuIList[index].isLoading){
-				//选中一级目录的所有 FCounty
-				let count = 0
-				if (this.cuIList[index].checked) {
-					this.$set(this.cuIList[index], 'checked', false);
-					this.cuIList[index].childrenList.forEach(item => {
-						item.checked = false;
-						count = 0
-					});
-				} else {
-					this.$set(this.cuIList[index], 'checked', true);
-					this.cuIList[index].childrenList.forEach(item => {
-						item.checked = true;
-						console.log(item)
-						if(item.quantity == '' || item.quantity ==null){
-							count+= Number(0)
-						}else{
-							count+= Number(item.quantity)
-						}
-					}); 
-				}
-				this.cuIList[index].FCounty = count
-				this.$set(this.cuIList[index], "show", true);
-			}else{
-			basic
-				.selectInvListByItemNumber({ itemNumber: this.cuIList[index].number })
-				.then(reso => {
-					if (reso.success) {
-						let data = reso.data;
-						this.cuIList[index].isLoading = true
-						data.forEach((item, index) =>{
-							item.quantity = 0
-							item.checked = false
-						})
-						this.cuIList[index].childrenList = data;
-						//选中一级目录的所有 FCounty
-						let count = 0
-						if (this.cuIList[index].checked) {
-							this.$set(this.cuIList[index], 'checked', false);
-							this.cuIList[index].childrenList.forEach(item => {
-								item.checked = false;
-								console.log(item)
-								if(item.quantity == '' || item.quantity ==null){
-									count+= Number(0)
-								}else{
-									count+= Number(item.quantity)
-								} 
-							});
-						} else {
-							this.$set(this.cuIList[index], 'checked', true);
-							this.cuIList[index].childrenList.forEach(item => {
-								item.checked = true;
-								console.log(item)
-								if(item.quantity == '' || item.quantity ==null){
-									count+= Number(0)
-								}else{
-									count+= Number(item.quantity)
-								}
-							}); 
-						}
-						this.cuIList[index].FCounty = count
-						this.$set(this.cuIList[index], "show", true);
-						this.$forceUpdate();
-					}
-				})
-				.catch(err => {
-					uni.showToast({
-						icon: 'none',
-						title: err.msg
-					});
-				});
-			}	
-			
-			
-			
-		},
-		_chooseOne(i1, i2) {
-			if (this.cuIList[i1].childrenList[i2].checked) {
-				//去掉勾选
-				this.$set(this.cuIList[i1], 'checked', true);
-				this.$set(this.cuIList[i1].childrenList[i2], 'checked', false);
-				if (this.cuIList[i1].childrenList.every(item => item.checked == false)) {
-					//判断是否全部都是选中
-					this.$set(this.cuIList[i1], 'checked', false);
-				}
-				if(this.cuIList[i1].childrenList[i2].quantity == '' || this.cuIList[i1].childrenList[i2].quantity == null){
-					return
-				}else{
-					this.cuIList[i1].FCounty = this.cuIList[i1].FCounty - Number(this.cuIList[i1].childrenList[i2].quantity)
-				}
-			} else {
-				//增加勾选
-				this.$set(this.cuIList[i1], 'checked', true);
-				this.$set(this.cuIList[i1].childrenList[i2], 'checked', true);
-				if (this.cuIList[i1].childrenList.every(item => item.checked == true)) {
-					//判断是否全部都是选中
-					this.$set(this.cuIList[i1], 'checked', true);
-				}
-				if(this.cuIList[i1].childrenList[i2].quantity == '' || this.cuIList[i1].childrenList[i2].quantity == null){
-					return
-				}else{
-					this.cuIList[i1].FCounty = this.cuIList[i1].FCounty + Number(this.cuIList[i1].childrenList[i2].quantity)
-				}
-			}
-		},
-		_computedFinalList() {
-			//计算最终的值
-			this.finalList = [];
-			this.cuIList.forEach(item => {
-				if (item.checked) {
-					this.finalList.push(JSON.parse(JSON.stringify(item))); //对象深拷贝 不然原数据会发生变化
 				}
 			});
-			this.finalList.forEach(item => {
-				item.childrenList.forEach((item2, index2) => {
-					if (!item2.checked) {
-						item.childrenList.splice(index2, 1);
-					}
-				});
-			});
+			this.cuIList[index].FCounty = count;
 		},
-		deleteItem(item,index) {
-			let me = this
+
+		deleteItem(item, index) {
+			let me = this;
 			uni.showModal({
 				title: '温馨提示',
 				content: '是否删除当前行,删除将无法复原？',
@@ -623,56 +419,38 @@ export default {
 			this.isClick = true;
 			let portData = {};
 			let result = [];
+			let isBatchNo = false;
 			let list = this.cuIList;
 			let array = [];
 			let me = this;
-			let isBatchNo = false;
 			let batchMsg = '';
-			let cIndex = 0
+			let cIndex = 0;
 			for (let i in list) {
-				let children = list[i].childrenList
-				children.forEach((item, index) =>{
-					if(item.checked){
-					cIndex ++
-						let obj = {};
-						obj.fauxqty = item.quantity;
-						obj.fentryId = cIndex;
-						obj.finBillNo = item.FBillNo;
-						obj.fbatchNo = item.FBatchNo;
-					/* if (list[i].FBatchManager) {
-						if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
-							obj.fbatchNo = list[i].fbatchNo;
-							isBatchNo = true;
-						} else {
-							isBatchNo = false;
-							batchMsg = '批号已启用，不允许为空';
-							break;
-						}
-					} else {
-						if (list[i].fbatchNo == '' || list[i].fbatchNo == null) {
-							obj.fbatchNo = list[i].fbatchNo;
-							isBatchNo = true;
-						} else {
-							batchMsg = '批号未启用，不允许输入';
-							isBatchNo = false;
-							break;
-						}
-					} */
-					obj.fitemId = item.FNumber;
-					obj.fdCSPId = item.FStockPlacename;
-					obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
-					obj.famount = list[i].Famount != null && typeof list[i].Famount != 'undefined' ? list[i].Famount : 0;
-					obj.fsCStockId = item.FStockNumber;
-					/* if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
-						result.push(list[i].index);
-					} */
-					obj.fsourceBillNo = list[i].fsourceBillNo == null || list[i].fsourceBillNo == 'undefined' ? '' : list[i].fsourceBillNo;
-					obj.fsourceEntryId = list[i].fsourceEntryID == null || list[i].fsourceEntryID == 'undefined' ? '' : list[i].fsourceEntryID;
-					obj.fsourceTranType = list[i].fsourceTranType == null || list[i].fsourceTranType == 'undefined' ? '' : list[i].fsourceTranType;
-					obj.funitId = item.FUnitID;
-					array.push(obj);
-					}	
-				})
+				let obj = {};
+				obj.fauxqty = list[i].quantity;
+				obj.fentryId = list[i].index;
+				obj.finBillNo = list[i].FBillNo;
+				if (list[i].fbatchNo != null && list[i].fbatchNo != null) {
+					obj.fbatchNo = list[i].fbatchNo;
+					isBatchNo = true;
+				} else {
+					isBatchNo = false;
+					break;
+				}
+				console.log(list[i].stockId)
+				obj.fitemId = list[i].number;
+				obj.fdCSPId = list[i].positions;
+				obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
+				obj.famount = list[i].Famount != null && typeof list[i].Famount != 'undefined' ? list[i].Famount : 0;
+				obj.fsCStockId = list[i].stockId;
+				if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
+					result.push(list[i].index);
+				}
+				obj.fsourceBillNo = list[i].fsourceBillNo == null || list[i].fsourceBillNo == 'undefined' ? '' : list[i].fsourceBillNo;
+				obj.fsourceEntryId = list[i].fsourceEntryID == null || list[i].fsourceEntryID == 'undefined' ? '' : list[i].fsourceEntryID;
+				obj.fsourceTranType = list[i].fsourceTranType == null || list[i].fsourceTranType == 'undefined' ? '' : list[i].fsourceTranType;
+				obj.funitId = list[i].FUnitID;
+				array.push(obj);
 			}
 			portData.items = array;
 			portData.ftranType = 24;
@@ -680,94 +458,105 @@ export default {
 			portData.fdate = this.form.fdate;
 			portData.fdeptId = this.form.fdeptID;
 			portData.fbillerID = this.form.fbillerID;
-			console.log(JSON.stringify(portData));
-			/* if (result.length == 0) {
-				if (isBatchNo) { */
-					production
-						.pickingStockOut(portData)
-						.then(res => {
-							if (res.success) {
-								this.cuIList = [];
-								uni.showToast({
-									icon: 'success',
-									title: res.msg
-								});
-								this.form.bNum = 0;
-								this.initMain();
-								if (this.isOrder) {
-									setTimeout(function() {
-										uni.$emit('handleBack', { startDate: me.startDate, endDate: me.endDate, source: me.source });
-										uni.navigateBack({
-											url: '../production/receiveActive'
-										});
-									}, 1000);
-								}
-							}
-						})
-						.catch(err => {
+			if (result.length == 0) {
+				if(isBatchNo){
+				production
+					.pickingStockOut(portData)
+					.then(res => {
+						if (res.success) {
+							this.cuIList = [];
 							uni.showToast({
-								icon: 'none',
-								title: err.msg
+								icon: 'success',
+								title: res.msg
 							});
-							this.isClick = false;
+							this.form.bNum = 0;
+							this.initMain();
+							if (this.isOrder) {
+								setTimeout(function() {
+									uni.$emit('handleBack', { startDate: me.startDate, endDate: me.endDate, source: me.source });
+									uni.navigateBack({
+										url: '../production/receiveActive'
+									});
+								}, 1000);
+							}
+						}
+					})
+					.catch(err => {
+						uni.showToast({
+							icon: 'none',
+							title: err.msg
 						});
-				/* } else {
-					uni.showToast({
-						icon: 'none',
-						title: batchMsg
+						this.isClick = false;
 					});
-					this.isClick = false;
-				}
+					}else{
+						uni.showToast({
+							icon: 'none',
+							title: '批号不允许为空'
+						});
+						this.isClick = false;
+					}
 			} else {
 				uni.showToast({
 					icon: 'none',
 					title: '仓库不允许为空'
 				});
 				this.isClick = false;
-			} */
+			}
 		},
-		submitCom(){
+		submitCom() {
 			var me = this;
-			if(me.popupForm.positions !='' && me.popupForm.positions !=null){
-				basic.selectFdCStockIdByFdCSPId({'fdCSPId':me.popupForm.positions}).then(reso => {
-					if(reso.data != null && reso.data != ''){
-						if(reso.data['FIsStockMgr']){
-							me.borrowItem.stockName = reso.data['stockName'];
-							me.borrowItem.stockId = reso.data['stockNumber'];
-							me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
-							me.borrowItem.positions = me.popupForm.positions
-							me.borrowItem.quantity = me.popupForm.quantity
-							me.borrowItem.fbatchNo = me.popupForm.fbatchNo
-							me.modalName2 = null 
-						}else{
-							me.borrowItem.stockName = reso.data['stockName'];
-							me.borrowItem.stockId = reso.data['stockNumber'];
-							me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
-							me.borrowItem.positions = ''
-							me.borrowItem.quantity = me.popupForm.quantity
-							me.borrowItem.fbatchNo = me.popupForm.fbatchNo
-							me.modalName2 = null 
+			if (me.popupForm.fbatchNo != '' && typeof(me.popupForm.fbatchNo) != 'undefined') {
+				if (me.popupForm.positions != '' && me.popupForm.positions != null) {
+					/* basic.selectFdCStockIdByFdCSPId({ fdCSPId: me.popupForm.positions }).then(reso => {
+						if (reso.data != null && reso.data != '') {
+							if (reso.data['FIsStockMgr']) {
+								me.borrowItem.stockName = reso.data['stockName'];
+								me.borrowItem.stockId = reso.data['stockNumber'];
+								me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
+								me.borrowItem.positions = me.popupForm.positions;
+								me.borrowItem.quantity = me.popupForm.quantity;
+								me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+								me.modalName2 = null;
+							} else {
+								me.borrowItem.stockName = reso.data['stockName'];
+								me.borrowItem.stockId = reso.data['stockNumber'];
+								me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
+								me.borrowItem.positions = '';
+								me.borrowItem.quantity = me.popupForm.quantity;
+								me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+								me.modalName2 = null;
+							}
+						} else {
+							uni.showToast({
+								icon: 'none',
+								title: '该库位不存在仓库中！'
+							});
 						}
-					}else{
-						uni.showToast({
+					}); */
+					me.borrowItem.positions = me.popupForm.positions;
+					me.borrowItem.quantity = me.popupForm.quantity;
+					me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+					me.modalName2 = null;
+				} else {
+					if (me.popupForm.FIsStockMgr) {
+						return uni.showToast({
 							icon: 'none',
-							title: '该库位不存在仓库中！',
+							title: '仓位已启用，请输入仓位！'
 						});
+					} else {
+						me.borrowItem.positions = '';
+						me.borrowItem.quantity = me.popupForm.quantity;
+						me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+						me.modalName2 = null;
 					}
-				})
-			}else{
-				if(me.popupForm.FIsStockMgr){
-					return uni.showToast({
-						icon: 'none',
-						title: '仓位已启用，请输入仓位！',
-					});
-				}else{ 
-					me.borrowItem.positions = ''
-					me.borrowItem.quantity = me.popupForm.quantity
-					me.borrowItem.fbatchNo = me.popupForm.fbatchNo
-					me.modalName2 = null 
 				}
-			} 
+			}else{
+				uni.showToast({
+					icon: 'none',
+					title: '批号为必填项！'
+				});
+			}
+
 		},
 		saveCom() {
 			var me = this;
@@ -777,16 +566,15 @@ export default {
 					content: '领料数量大于单据数量！请确认！',
 					success: function(res) {
 						if (res.confirm) {
-							me.submitCom()
+							me.submitCom();
 						} else if (res.cancel) {
-							return
+							return;
 						}
 					}
 				});
 			} else {
-				me.submitCom()
+				me.submitCom();
 			}
-			
 		},
 		del(index, item) {
 			this.cuIList.splice(index, 1);
@@ -884,115 +672,21 @@ export default {
 			let me = this;
 			uni.scanCode({
 				success: function(res) {
-					basic.selectFdCStockIdByFdCSPId({'fdCSPId':res.result}).then(reso => {
-						if(reso.data != null && reso.data != ''){
+					basic.selectFdCStockIdByFdCSPId({ fdCSPId: res.result }).then(reso => {
+						if (reso.data != null && reso.data != '') {
 							me.popupForm.positions = res.result;
 							me.popupForm.stockName = reso.data['stockName'];
 							me.popupForm.stockId = reso.data['stockNumber'];
 							me.popupForm.FIsStockMgr = reso.data['FIsStockMgr'];
-						}else{
-							uni.showToast({
-								icon: 'none',
-								title: '该库位不存在仓库中！',
-							});
-						}
-					})
-				}
-			});
-		},
-		chooseClick(val) {
-			console.log(val);
-			var that = this;
-			var choose = val;
-			let number = 0;
-			for (let j in choose) {
-				if (that.isOrder) {
-					for (let i in that.cuIList) {
-						if (choose[j]['FItemID'] == that.cuIList[i]['FItemID']) {
-							if (choose[j]['FStockNumber'] == that.cuIList[i]['stockId'] && choose[j]['FBatchNo'] == that.cuIList[i]['fbatchNo']) {
-								if (choose[j]['quantity'] == null) {
-									choose[j]['quantity'] = 1;
-								}
-								if (choose[j]['isEnable'] == 2) {
-									choose[j]['uuid'] = null;
-								}
-								that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(choose[j]['quantity']);
-								number++;
-								break;
-							}
 						} else {
 							uni.showToast({
 								icon: 'none',
-								title: '该物料不在所选列表中！'
+								title: '该库位不存在仓库中！'
 							});
-							number++;
-							break;
 						}
-					}
-					if (number == 0) {
-						if (choose[j]['quantity'] == null) {
-							choose[j]['quantity'] = 1;
-						}
-						if (choose[j]['isEnable'] == 2) {
-							choose[j]['uuid'] = null;
-						}
-						choose[j].stockName = choose[j].FStockName;
-						choose[j].stockId = choose[j].FStockNumber;
-						choose[j].FIsStockMgr = choose[j].FIsStockMgr;
-						choose[j].fbatchNo = choose[j].FBatchNo;
-						choose[j].number = choose[j].FNumber;
-						choose[j].name = choose[j].FName;
-						choose[j].unitName = choose[j].FUnitName;
-						choose[j].model = choose[j].FModel;
-						choose[j].unitID = choose[j].FUnitID;
-						that.cuIList.push(choose[j]);
-						that.form.bNum = that.cuIList.length;
-					}
-					/* }else{
-							uni.showToast({
-								icon: 'none',
-								title: '该物料不在所选单据中！',
-							});
-						} */
-				} else {
-					for (let i in that.cuIList) {
-						if (
-							choose[j]['FItemID'] == that.cuIList[i]['FItemID'] &&
-							choose[j]['FStockNumber'] == that.cuIList[i]['stockId'] &&
-							choose[j]['FBatchNo'] == that.cuIList[i]['fbatchNo']
-						) {
-							if (choose[j]['quantity'] == null) {
-								choose[j]['quantity'] = 1;
-							}
-							if (choose[j]['isEnable'] == 2) {
-								choose[j]['uuid'] = null;
-							}
-							that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(choose[j]['quantity']);
-							number++;
-							break;
-						}
-					}
-					if (number == 0) {
-						if (choose[j]['quantity'] == null) {
-							choose[j]['quantity'] = 1;
-						}
-						if (choose[j]['isEnable'] == 2) {
-							choose[j]['uuid'] = null;
-						}
-						choose[j].stockName = choose[j].FStockName;
-						choose[j].stockId = choose[j].FStockNumber;
-						choose[j].FIsStockMgr = choose[j].FIsStockMgr;
-						choose[j].fbatchNo = choose[j].FBatchNo;
-						choose[j].number = choose[j].FNumber;
-						choose[j].name = choose[j].FName;
-						choose[j].unitName = choose[j].FUnitName;
-						choose[j].model = choose[j].FModel;
-						choose[j].unitID = choose[j].FUnitID;
-						that.cuIList.push(choose[j]);
-						that.form.bNum = that.cuIList.length;
-					}
+					});
 				}
-			}
+			});
 		},
 		fabClick() {
 			var that = this;
@@ -1126,4 +820,3 @@ export default {
 	width: 100%;
 }
 </style>
-

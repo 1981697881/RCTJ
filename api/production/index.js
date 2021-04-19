@@ -18,5 +18,12 @@ export default {
             },
 			data: params
         });
-    }
+    },customItemCLass(params) {
+        return Request().get('/api/basic/customItemCLass', {
+            header: {
+				accept: '*/*'
+            },
+			data: params
+        });
+    },
 };
