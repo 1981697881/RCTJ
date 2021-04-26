@@ -4,6 +4,7 @@
 			<block slot="backText">返回</block>
 			<block slot="content">领料</block>
 		</cu-custom>
+		<uni-fab :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" cuIcon="scan" distable :direction="direction" @fabClick="fabClick"></uni-fab>
 		<view class="box getheight">
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
@@ -26,17 +27,17 @@
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
 			<view v-for="(item, index) in cuIconList" :key="index">
 				<view class="cu-list menu-avatar">
-					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 200upx;">
+					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 160upx;">
 						<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="$manyCk(showList(index, item))" data-target="Modal" data-number="item.number">
 							<view class="text-grey">日期:{{ item.Fdate }}</view>
 							<view class="text-grey">单号:{{ item.FBillNo }}</view>
-							<view class="text-grey">产品编码:{{ item.FPrdNumber }}</view>
+							<!-- <view class="text-grey">产品编码:{{ item.FPrdNumber }}</view>
 							<view class="text-grey">产品名称:{{ item.FPrdItemName }}</view>
-							<view class="text-grey">产品规格:{{ item.FPrdModel }}</view>
+							<view class="text-grey">产品规格:{{ item.FPrdModel }}</view> -->
 							<view class="text-grey">编码:{{ item.FItemNumber }}</view>
 							<view class="text-grey">名称:{{ item.FItemName }}</view>
 							<view class="text-grey">规格:{{ item.FModel }}</view>
-							<!-- <view class="text-grey">数量:{{item.Fauxqty}}</view> -->
+							<view class="text-grey">数量:0</view>
 						</view>
 					</view>
 				</view>
@@ -59,6 +60,16 @@ export default {
 				contentdown: '上拉显示更多',
 				contentrefresh: '正在加载...',
 				contentnomore: '没有更多数据了'
+			},
+			horizontal: 'right',
+			vertical: 'bottom',
+			popMenu: false,
+			direction: 'horizontal',
+			pattern: {
+				color: '#7A7E83',
+				backgroundColor: '#fff',
+				selectedColor: '#007AFF',
+				buttonColor: '#007AFF'
 			},
 			isShow: true,
 			start: '',
@@ -209,6 +220,16 @@ export default {
 					this.end +
 					'&FDeptNumber=' +
 					item.FDeptNumber
+			});
+		},
+		fabClick() {
+			var that = this;
+			uni.scanCode({
+				success: function(res) {
+					that.keyword = '';
+					that.keyword = res.result.substr(0, 10);
+					that.search();
+				}
 			});
 		},
 		fetchData(val = '') {

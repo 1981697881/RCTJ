@@ -414,6 +414,7 @@ export default {
 				obj.fentryId = list[i].index;
 				obj.finBillNo = this.form.finBillNo;
 				obj.fitemId = list[i].number;
+				obj.fbatchNo = list[i].fbatchNo;
 				/* if (list[i].FBatchManager) {
 					if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
 						obj.fbatchNo = list[i].fbatchNo;
@@ -438,7 +439,7 @@ export default {
 				obj.fdCSPId = list[i].positions;
 				obj.uuid = list[i].uuid;
 				obj.fqty = list[i].fqty;
-				obj.fdCStockId = list[i].stockId;
+				obj.FSCStockID = list[i].stockId;
 				if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
 					result.push(list[i].index);
 				}

@@ -35,7 +35,7 @@
 							<view class="text-grey">名称:{{ item.FItemName }}</view>
 							<view class="text-grey">规格:{{ item.FModel }}</view>
 							<view class="text-grey">应收数量:{{ item.Fauxqty }}</view>
-							<view class="text-grey">制单人:{{ item.Fbiller }}</view>
+							<view class="text-grey">制单人:{{ item.FChecker }}</view>
 							<view class="text-grey">片数:{{ item.fqty }}</view>
 						</view>
 					</view>

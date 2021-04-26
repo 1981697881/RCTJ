@@ -97,7 +97,7 @@
 			}
 		},
 		created(){
-			if(service.getUsers()[0].account !='' && typeof service.getUsers()[0].account != "undefined"){
+			if(service.getUsers() !='' && typeof service.getUsers() != "undefined"){
 			this.account = service.getUsers()[0].account
 			this.password = service.getUsers()[0].password
 			}	

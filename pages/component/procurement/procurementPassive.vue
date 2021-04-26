@@ -17,7 +17,7 @@
 					<ruiDatePicker fields="day" class="ruidata" start="2010-00-00" end="2030-12-30" :value="form.fdate" @change="bindChange"></ruiDatePicker>
 				</view>
 				<view class="action">
-					包数:
+					行数:
 					<text>{{ form.bNum }}</text>
 				</view>
 			</view>

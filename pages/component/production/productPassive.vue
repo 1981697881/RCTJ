@@ -409,6 +409,7 @@ export default {
 				obj.fentryId = list[i].index;
 				obj.finBillNo = this.form.finBillNo;
 				obj.fitemId = list[i].number;
+				obj.fbatchNo = list[i].fbatchNo;
 				/* if (list[i].FBatchManager) {
 					if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
 						obj.fbatchNo = list[i].fbatchNo;
