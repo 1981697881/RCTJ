@@ -35,7 +35,15 @@ export default {
 			data: params
         });
     },
-	//获取部门
+	//获取物料
+	getItemList(params) {
+        return Request().post('/barcodePrint/getItemList', {
+            header: {
+				contentType: 'application/json',
+            },
+			data: params
+        });
+    },//获取部门
 	getDeptList(params) {
         return Request().post('/api/basic/deptList', {
             header: {

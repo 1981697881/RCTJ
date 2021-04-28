@@ -30,7 +30,7 @@
 					<view style="width: 90px;">部门:</view>
 					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
 				</view>
-				<view class="action">
+				<!-- <view class="action">
 					<view style="width: 90px;">仓库:</view>
 					<ld-select
 						:list="stockList"
@@ -41,6 +41,18 @@
 						clearable
 						v-model="form.fdCStockId"
 						@change="stockChange"
+					></ld-select>
+				</view> -->
+				<view class="action">
+					<view style="width: 90px;">机台:</view>
+					<ld-select
+						:list="customItemList"
+						list-key="FName"
+						value-key="FNumber"
+						placeholder="请选择"
+						clearable
+						v-model="form.fsupplyId"
+						@change="custItemChange"
 					></ld-select>
 				</view>
 			</view>
@@ -200,6 +212,7 @@ export default {
 				fnote: '',
 				fbillerID: null,
 				fdCStockId: '',
+				fsupplyId: '',
 				fdeptID: ''
 			},
 			borrowItem: {},
@@ -212,6 +225,7 @@ export default {
 			listTouchStart: 0,
 			listTouchDirection: null,
 			deptList: [],
+			customItemList: [],
 			chooseList: [],
 			stockList: [],
 			horizontal: 'right',
@@ -319,6 +333,9 @@ export default {
 		}
 	},
 	methods: {
+		custItemChange(val) {
+			this.form.fsupplyId = val;
+		},
 		setQuty(val, index) {
 			let list = this.cuIList[index].childrenList;
 			let count = 0;
@@ -399,6 +416,19 @@ export default {
 						title: err.msg
 					});
 				});
+				production
+					.customItemCLass({ deptNumber: me.deptNumber, itemClassId: 14 })
+					.then(res => {
+						if (res.success) {
+							me.customItemList = res.data;
+						}
+					})
+					.catch(err => {
+						uni.showToast({
+							icon: 'none',
+							title: err.msg
+						});
+					});
 			basic
 				.getStockList({})
 				.then(res => {
@@ -452,8 +482,20 @@ export default {
 				obj.funitId = list[i].FUnitID;
 				array.push(obj);
 			}
+			if(me.customItemList.length>0){
+				if(typeof(me.form.fsupplyId)!="undefined" && me.form.fsupplyId!=''){
+					
+				}else{
+					this.isClick = false;
+					return uni.showToast({
+					icon: 'none',
+					title: '机台不允许为空'
+				}); 
+				}
+			}
 			portData.items = array;
 			portData.ftranType = 24;
+			portData.fsupplyId = this.form.fsupplyId;
 			portData.finBillNo = this.form.finBillNo;
 			portData.fdate = this.form.fdate;
 			portData.fdeptId = this.form.fdeptID;
@@ -560,7 +602,7 @@ export default {
 		},
 		saveCom() {
 			var me = this;
-			if (this.popupForm.quantity > me.borrowItem.Fauxqty) {
+			/* if (this.popupForm.quantity > me.borrowItem.Fauxqty) {
 				uni.showModal({
 					title: '温馨提示',
 					content: '领料数量大于单据数量！请确认！',
@@ -572,9 +614,9 @@ export default {
 						}
 					}
 				});
-			} else {
+			} else { */
 				me.submitCom();
-			}
+			/* } */
 		},
 		del(index, item) {
 			this.cuIList.splice(index, 1);

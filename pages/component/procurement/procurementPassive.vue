@@ -5,7 +5,8 @@
 			<block slot="backText">返回</block>
 			<block slot="content">外购入库</block>
 		</cu-custom>
-		<!-- <uni-fab :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" distable :direction="direction" @fabClick="fabClick"></uni-fab> -->
+		<uni-fab :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" distable :direction="direction" @fabClick="fabClick"></uni-fab>
+		<song-data-picker @search="getMateriel" ref="songData" :localdata="items" popup-title="请选择物料" :openSearch="true" @change="onchange" @nodeclick="onnodeclick"></song-data-picker>
 		<view class="box getheight">
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
@@ -181,18 +182,7 @@ export default {
 	data() {
 		return {
 			items: [
-				{
-					text: '一年级',
-					value: '1-0',
-				},
-				{
-					text: '二年级',
-					value: '2-0'
-				},
-				{
-					text: '三年级',
-					value: '3-0'
-				}
+				
 			],
 			formatName: 'FName',
 			pageHeight: 0,
@@ -337,7 +327,57 @@ export default {
 		}
 	},
 	methods: {
-		
+		onchange(e) {
+			let reso = e.detail.value
+			let that = this
+			let number = 0;
+			for (let i in that.cuIList) {
+				if (
+					reso['number'] == that.cuIList[i]['number'] &&
+					reso['stockNumber'] == that.cuIList[i]['stockId'] &&
+					reso['batchNo'] == that.cuIList[i]['fbatchNo']
+				) {
+					if (reso['quantity'] == null) {
+						reso['quantity'] = 1;
+					}
+					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(reso['quantity']);
+					number++;
+					break;
+				}
+			}
+			if (number == 0) {
+				if (reso['quantity'] == null) {
+					reso['quantity'] = 1;
+				}
+				reso.stockName = reso.stockNumber;
+				reso.stockId = reso.warehouse;
+				reso.FIsStockMgr = reso.FIsStockMgr;
+				reso.fbatchNo = reso.batchNo;
+				reso.number = reso.FNumber;
+				reso.name = reso.FName;
+				reso.model = reso.FModel;
+				reso.unitID = reso.FUnitNumber;
+				reso.unitName = reso.FUnitName;
+				that.cuIList.push(reso);
+				that.form.bNum = that.cuIList.length;
+			}
+		},
+		getMateriel(val,callback){
+			console.log('進入')
+			basic
+				.getItemList({ name: val })
+				.then(res => {
+					if (res.success) {
+						callback(res.data)
+					}
+				})
+				.catch(err => {
+					uni.showToast({
+						icon: 'none',
+						title: err.msg
+					});
+				});
+		},
 		onnodeclick(node) {},
 		cityClick(item) {
 			this.form.FSupplyName = item.FName;
@@ -726,104 +766,10 @@ export default {
 			});
 		},
 		fabClick() {
-			var that = this;
-			uni.scanCode({
-				success: function(res) {
-					basic
-						.barcodeScan({ uuid: res.result })
-						.then(reso => {
-							if (reso.success) {
-								if (that.isOrder) {
-									//if(reso.data['billNo'] == this.billNo){
-									let number = 0;
-									for (let i in that.cuIList) {
-										if (reso.data['number'] == that.cuIList[i]['number']) {
-											if (reso.data['stockNumber'] == that.cuIList[i]['stockId'] && reso.data['batchNo'] == that.cuIList[i]['fbatchNo']) {
-												if (reso.data['quantity'] == null) {
-													reso.data['quantity'] = 1;
-												}
-												if (reso.data['isEnable'] == 2) {
-													reso.data['uuid'] = null;
-												}
-												that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(reso.data['quantity']);
-												number++;
-												break;
-											}
-										} else {
-											uni.showToast({
-												icon: 'none',
-												title: '该物料不在所选列表中！'
-											});
-											number++;
-											break;
-										}
-									}
-									if (number == 0) {
-										if (reso.data['quantity'] == null) {
-											reso.data['quantity'] = 1;
-										}
-										if (reso.data['isEnable'] == 2) {
-											reso.data['uuid'] = null;
-										}
-										reso.data.stockName = reso.data.stockNumber;
-										reso.data.stockId = reso.data.warehouse;
-										reso.data.FIsStockMgr = reso.data.FIsStockMgr;
-										reso.data.fbatchNo = reso.data.batchNo;
-										that.cuIList.push(reso.data);
-										that.form.bNum = that.cuIList.length;
-									}
-									/* }else{
-									uni.showToast({
-										icon: 'none',
-										title: '该物料不在所选单据中！',
-									});
-								} */
-								} else {
-									let number = 0;
-									for (let i in that.cuIList) {
-										if (
-											reso.data['number'] == that.cuIList[i]['number'] &&
-											reso.data['uuid'] == that.cuIList[i]['uuid'] &&
-											reso.data['stockNumber'] == that.cuIList[i]['stockId'] &&
-											reso.data['batchNo'] == that.cuIList[i]['fbatchNo']
-										) {
-											if (reso.data['quantity'] == null) {
-												reso.data['quantity'] = 1;
-											}
-											if (reso.data['isEnable'] == 2) {
-												reso.data['uuid'] = null;
-											}
-											that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(reso.data['quantity']);
-											number++;
-											break;
-										}
-									}
-									if (number == 0) {
-										if (reso.data['quantity'] == null) {
-											reso.data['quantity'] = 1;
-										}
-										if (reso.data['isEnable'] == 2) {
-											reso.data['uuid'] = null;
-										}
-										reso.data.stockName = reso.data.stockNumber;
-										reso.data.stockId = reso.data.warehouse;
-										reso.data.FIsStockMgr = reso.data.FIsStockMgr;
-										reso.data.fbatchNo = reso.data.batchNo;
-										that.cuIList.push(reso.data);
-										that.form.bNum = that.cuIList.length;
-									}
-								}
-							}
-						})
-						.catch(err => {
-							uni.showToast({
-								icon: 'none',
-								title: err.msg
-							});
-						});
-				}
+			this.$nextTick(() => {
+				this.$refs.songData.handleInput();
 			});
-		}, // ListTouch触摸开始
+		},
 		ListTouchStart(e) {
 			this.listTouchStart = e.touches[0].pageX;
 		},

@@ -61,10 +61,21 @@
 			</view>
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
-					<view>部门:</view>
+					<view style="width: 90px;">部门:</view>
 					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
 				</view>
-				
+				<view class="action">
+					<view style="width: 120px;">工序部门:</view>
+					<ld-select
+						:list="stockList"
+						list-key="FName"
+						value-key="FNumber"
+						placeholder="请选择"
+						clearable
+						v-model="form.FCustID"
+						@change="custChange"
+					></ld-select>
+				</view>
 			</view>
 		</view>
 		<view class="cu-modal" :class="modalName == 'Modal' ? 'show' : ''">
@@ -216,6 +227,7 @@ export default {
 				fbillerID: null,
 				fdCStockId: '',
 				fsupplyId: '',
+				FCustID: '',
 				fdeptID: ''
 			},
 			borrowItem: {},
@@ -460,6 +472,15 @@ export default {
 				}); 
 				}
 			}
+				if(typeof(me.form.FCustID)!="undefined" && me.form.FCustID!=''){
+					portData.FCustID = this.form.FCustID;
+				}else{
+					this.isClick = false;
+					return uni.showToast({
+					icon: 'none',
+					title: '工序部门不允许为空'
+				}); 
+				}
 			portData.items = array;
 			portData.ftranType = 24;
 			portData.fsupplyId = this.form.fsupplyId;
@@ -467,6 +488,7 @@ export default {
 			portData.fdate = this.form.fdate;
 			portData.fbillerID = this.form.fbillerID;
 			portData.fdeptId = this.form.fdeptID;
+			
 			if (result.length == 0) {
 				
 				production
@@ -646,6 +668,8 @@ export default {
 		},
 		deptChange(val) {
 			this.form.fdeptID = val;
+		},custChange(val) {
+			this.form.FCustID = val;
 		},
 		custItemChange(val) {
 			this.form.fsupplyId = val;

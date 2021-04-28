@@ -110,7 +110,7 @@
 			</view>
 		</view>
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
-			<!-- <view v-for="(item, index) in cuIList" :key="index">
+			<view v-for="(item, index) in cuIList" :key="index">
 				<view class="cu-list menu-avatar">
 					<view
 						class="cu-item"
@@ -143,58 +143,6 @@
 							</view>
 						</view>
 						<view class="move"><view class="bg-red" @tap="del(index, item)">删除</view></view>
-					</view>
-				</view>
-			</view> -->
-			<view class="selectTrees">
-				<!-- 一级分支 -->
-				<view class="lv1list" v-for="(item, index) in cuIList" :key="index" @longpress="deleteItem(index, item)">
-					<view class="tree-one" style="background: white;width: 100%;margin-top: 2px;height: 150upx;">
-						<!-- 单选框组件 -->
-						<checkbox-group v-if="showCheck" style="position: absolute;height: 80rpx;line-height: 150upx; left:20rpx;z-index: 1;">
-							<checkbox :checked="item.checked" @click="_chooseAll(item, index)" />
-						</checkbox-group>
-						<!-- 名字和iconfont -->
-						<label style="height:100%;display: flex;align-items: center;padding: 20rpx;position: relative;border-bottom: 1px solid #e4e4e4;" @click="_showlv2(index)">
-							<view style="clear: both;width: 100%;" class="grid text-center col-2">
-								<view class="itemT">编码:{{ item.number }}</view>
-								<view class="itemT">名称:{{ item.name }}</view>
-								<view class="itemT">单位:{{ item.unitName }}</view>
-								<view class="itemT">规格:{{ item.model }}</view>
-								<view class="itemT">应发数量:{{ item.Fauxqty }}</view>
-								<view class="itemT">实际数量:{{ item.FCounty }}</view>
-							</view>
-							<!-- <view class="deleteBtn" v-if="showDelete" @click.stop="deleteItem(item, index)">删除</view> -->
-							<i class="cuIcon-unfold" v-if="item.show" style="position: absolute;top: 40%;right: 2%;font-size: 48rpx;"></i>
-							<i class="cuIcon-fold" v-else style="position: absolute;top: 40%;right: 2%;font-size: 48rpx;"></i>
-						</label>
-					</view>
-					<!-- 二级分支 -->
-					<view v-if="item.show && item.childrenList">
-						<view class="tree-two" v-for="(item2, index2) in item.childrenList" :key="index2" style="display: flex;">
-							<view class="aui-list-item-inner flexIn">
-								<checkbox-group v-if="showCheck">
-									<checkbox v-if="!disableLv2Check" :checked="item2.checked" @click="_chooseOne(index, index2)" />
-									<checkbox :checked="item2.checked" disabled="true" v-else />
-								</checkbox-group>
-								<view style="clear: both;width: 100%;" class="grid text-center col-2">
-									<view class="itemO">批号:{{ item2.FBatchNo }}</view>
-									<view class="itemO">仓库:{{ item2.FStockName }}</view>
-									<view class="itemO">仓位:{{ item2.FStockPlacename }}</view>
-									<view class="itemO">库存数:{{ item2.FQty }}</view>
-									<view class="itemO" style="width: 80% !important;">
-										<view class="title" style="float: left;margin-left: 25%;">出库数:</view>
-										<input
-											name="input"
-											@input="setQuty($event, index)"
-											type="digit"
-											style="font-size: 13px;text-align: left;border-bottom: 1px solid;"
-											v-model="item2.quantity"
-										/>
-									</view>
-								</view>
-							</view>
-						</view>
 					</view>
 				</view>
 			</view>
@@ -320,7 +268,6 @@ export default {
 				.then(res => {
 					if (res.success) {
 						let data = res.data.list;
-						console.log(data);
 						for (let i in data) {
 							me.cuIList.push({
 								Fdate: data[i].Fdate,
@@ -388,40 +335,42 @@ export default {
 	},
 	methods: {
 		onchange(e) {
+			console.log(e)
+			let res = e.detail.value
 			let that = this
 			let number = 0;
-			/* for (let i in that.cuIList) {
-				if (reso.data['number'] == that.cuIList[i]['number']) {
-					if (reso.data['quantity'] == null) {
-						reso.data['quantity'] = 1;
+			for (let i in that.cuIList) {
+				if (res['number'] == that.cuIList[i]['number']) {
+					if (res['quantity'] == null) {
+						res['quantity'] = 1;
 					}
-					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(reso.data['quantity']);
+					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(res['quantity']);
 					number++;
 					break;
 				}
 			}
 			if (number == 0) {
-				if (reso.data['quantity'] == null) {
-					reso.data['quantity'] = 1;
+				if (res['quantity'] == null) {
+					res['quantity'] = 1;
 				}
-				reso.data.stockName = reso.data.stockNumber;
-				reso.data.stockId = reso.data.warehouse;
-				reso.data.FIsStockMgr = reso.data.FIsStockMgr;
-				reso.data.fbatchNo = reso.data.batchNo;
-				that.cuIList.push(reso.data);
+				that.cuIList.push({
+								number: res.FNumber,
+								name: res.FName,
+								model: res.FModel,
+								FBatchManager: res.FBatchManager,
+								unitID: res.FUnitNumber,
+								unitName: res.FUnitName
+							});
 				that.form.bNum = that.cuIList.length;
-			} */
-			console.log(e.detail.value)
-			const value = e.detail.value;
+			}
 		},
 		getMateriel(val,callback){
 			console.log('進入')
-			callback("12331") 
 			basic
-				.getBillNo({ TranType: 24 })
+				.getItemList({ name: val })
 				.then(res => {
 					if (res.success) {
-						me.form.finBillNo = res.data;
+						callback(res.data)
 					}
 				})
 				.catch(err => {
@@ -725,7 +674,7 @@ export default {
 							isBatchNo = false;
 							break;
 						}
-					} */
+					}
 						obj.fitemId = item.FNumber;
 						obj.fdCSPId = item.FStockPlacename;
 						obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
@@ -797,7 +746,7 @@ export default {
 		submitCom() {
 			var me = this;
 			if (me.popupForm.positions != '' && me.popupForm.positions != null) {
-				basic.selectFdCStockIdByFdCSPId({ fdCSPId: me.popupForm.positions }).then(reso => {
+				/* basic.selectFdCStockIdByFdCSPId({ fdCSPId: me.popupForm.positions }).then(reso => {
 					if (reso.data != null && reso.data != '') {
 						if (reso.data['FIsStockMgr']) {
 							me.borrowItem.stockName = reso.data['stockName'];
@@ -822,7 +771,14 @@ export default {
 							title: '该库位不存在仓库中！'
 						});
 					}
-				});
+				}); */
+				me.borrowItem.stockName = reso.data['stockName'];
+				me.borrowItem.stockId = reso.data['stockNumber'];
+				me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
+				me.borrowItem.positions = '';
+				me.borrowItem.quantity = me.popupForm.quantity;
+				me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+				me.modalName2 = null;
 			} else {
 				if (me.popupForm.FIsStockMgr) {
 					return uni.showToast({
