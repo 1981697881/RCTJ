@@ -132,7 +132,7 @@
 						:data-target="'move-box-' + index"
 					>
 						<view style="clear: both;width: 100%;">
-							<view style="clear: both;width: 100%;" class="grid text-center col-2" @tap="showModal2(index, item)" data-target="Modal" data-number="item.number">
+							<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="showModal2(index, item)" data-target="Modal" data-number="item.number">
 								<view class="text-grey">序号:{{ (item.index = index + 1) }}</view>
 								<view class="text-grey">编码:{{ item.number }}</view>
 								<view class="text-grey">名称:{{ item.name }}</view>

@@ -344,24 +344,20 @@ export default {
 					reso['stockNumber'] == that.cuIList[i]['stockId'] &&
 					reso['batchNo'] == that.cuIList[i]['fbatchNo']
 				) {
-					if (reso['quantity'] == null) {
-						reso['quantity'] = 1;
-					}
-					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + parseFloat(reso['quantity']);
+					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + 1;
 					number++;
 					break;
 				}
 			}
 			if (number == 0) {
-				if (reso['quantity'] == null) {
-					reso['quantity'] = 1;
-				}
+				reso.quantity = 1;
 				reso.stockName = reso.stockNumber;
 				reso.stockId = reso.warehouse;
 				reso.FIsStockMgr = reso.FIsStockMgr;
 				reso.fbatchNo = reso.batchNo;
 				reso.number = reso.FNumber;
 				reso.name = reso.FName;
+				reso.fqty = 0;
 				reso.model = reso.FModel;
 				reso.unitID = reso.FUnitNumber;
 				reso.unitName = reso.FUnitName;

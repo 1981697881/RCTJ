@@ -35,6 +35,18 @@
 					<ld-select :list="deptList" list-key="FName" value-key="FNumber" placeholder="请选择" clearable v-model="form.fdeptID" @change="deptChange"></ld-select>
 				</view> -->
 				<view class="action">
+					<view style="width: 100px;">上工序:</view>
+					<ld-select
+						:list="stockList"
+						list-key="FName"
+						value-key="FNumber"
+						placeholder="请选择"
+						clearable
+						v-model="form.FCustID"
+						@change="custChange"
+					></ld-select>
+				</view>
+				<view class="action">
 					<view style="width: 100px;">工序仓:</view>
 					<ld-select
 						:list="stockList"
@@ -46,8 +58,15 @@
 						@change="stockChange"
 					></ld-select>
 				</view>
+				
+			</view>
+			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
-					<view style="width: 90px;">机台:</view>
+					<view style="width: 100px;">部门:</view>
+					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
+				</view>
+				<view class="action">
+					<view style="width: 100px;">机台:</view>
 					<ld-select
 						:list="customItemList"
 						list-key="FName"
@@ -58,24 +77,7 @@
 						@change="custItemChange"
 					></ld-select>
 				</view>
-			</view>
-			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
-				<view class="action">
-					<view style="width: 90px;">部门:</view>
-					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
-				</view>
-				<view class="action">
-					<view style="width: 120px;">工序部门:</view>
-					<ld-select
-						:list="stockList"
-						list-key="FName"
-						value-key="FNumber"
-						placeholder="请选择"
-						clearable
-						v-model="form.FCustID"
-						@change="custChange"
-					></ld-select>
-				</view>
+				
 			</view>
 		</view>
 		<view class="cu-modal" :class="modalName == 'Modal' ? 'show' : ''">
