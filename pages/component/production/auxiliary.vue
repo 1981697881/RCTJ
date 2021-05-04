@@ -353,14 +353,18 @@ export default {
 				if (res['quantity'] == null) {
 					res['quantity'] = 1;
 				}
-				that.cuIList.push({
-								number: res.FNumber,
-								name: res.FName,
-								model: res.FModel,
-								FBatchManager: res.FBatchManager,
-								unitID: res.FUnitNumber,
-								unitName: res.FUnitName
-							});
+				res.stockName = res.FDefaultStockName;
+				res.stockId = res.FDefaultStockNumber;
+				res.FIsStockMgr = res.FIsStockMgr;
+				res.fbatchNo = res.batchNo;
+				res.number = res.FNumber;
+				res.name = res.FName;
+				res.fqty = 0;
+				res.model = res.FModel;
+				res.unitID = res.FUnitNumber;
+				res.unitName = res.FUnitName;
+				res.FBatchManager = res.FBatchManager;
+				that.cuIList.push(res);
 				that.form.bNum = that.cuIList.length;
 			}
 		},
@@ -772,10 +776,7 @@ export default {
 						});
 					}
 				}); */
-				me.borrowItem.stockName = reso.data['stockName'];
-				me.borrowItem.stockId = reso.data['stockNumber'];
-				me.borrowItem.FIsStockMgr = reso.data['FIsStockMgr'];
-				me.borrowItem.positions = '';
+				me.borrowItem.positions = me.popupForm.positions;
 				me.borrowItem.quantity = me.popupForm.quantity;
 				me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
 				me.modalName2 = null;

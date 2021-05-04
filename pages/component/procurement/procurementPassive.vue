@@ -334,7 +334,7 @@ export default {
 			for (let i in that.cuIList) {
 				if (
 					reso['number'] == that.cuIList[i]['number'] &&
-					reso['stockNumber'] == that.cuIList[i]['stockId'] &&
+					reso['FDefaultStockNumber'] == that.cuIList[i]['stockId'] &&
 					reso['batchNo'] == that.cuIList[i]['fbatchNo']
 				) {
 					if (reso['quantity'] == null) {
@@ -349,8 +349,8 @@ export default {
 				if (reso['quantity'] == null) {
 					reso['quantity'] = 1;
 				}
-				reso.stockName = reso.stockNumber;
-				reso.stockId = reso.warehouse;
+				reso.stockName = reso.FDefaultStockName;
+				reso.stockId = reso.FDefaultStockNumber;
 				reso.FIsStockMgr = reso.FIsStockMgr;
 				reso.fbatchNo = reso.batchNo;
 				reso.number = reso.FNumber;
