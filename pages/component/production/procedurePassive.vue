@@ -46,8 +46,8 @@
 						@change="custChange"
 					></ld-select>
 				</view>
-				<view class="action">
-					<view style="width: 100px;">工序仓:</view>
+				<!-- <view class="action">
+					<view style="width: 100px;">上工序:</view>
 					<ld-select
 						:list="stockList"
 						list-key="FName"
@@ -57,14 +57,7 @@
 						v-model="form.fdCStockId"
 						@change="stockChange"
 					></ld-select>
-				</view>
-				
-			</view>
-			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
-				<view class="action">
-					<view style="width: 100px;">部门:</view>
-					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
-				</view>
+				</view> -->
 				<view class="action">
 					<view style="width: 100px;">机台:</view>
 					<ld-select
@@ -77,6 +70,13 @@
 						@change="custItemChange"
 					></ld-select>
 				</view>
+			</view>
+			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
+				<view class="action">
+					<view style="">部门:</view>
+					<input name="input" disabled style="font-size: 13px;text-align: left;" v-model="fdeptName" />
+				</view>
+				
 				
 			</view>
 		</view>
@@ -152,7 +152,7 @@
 				<view class="cu-list menu-avatar">
 					<view
 						class="cu-item"
-						style="width: 100%;margin-top: 2px;height: 260upx;"
+						style="width: 100%;margin-top: 2px;height: 220upx;"
 						:class="modalName == 'move-box-' + index ? 'move-cur' : ''"
 						@touchstart="ListTouchStart"
 						@touchmove="ListTouchMove"
@@ -173,16 +173,16 @@
 								<!-- <view class="text-grey">仓位:{{ item.positions }}</view> -->
 								<view class="text-grey">{{ item.stockName }}</view>
 							</view>
-							<view class="text-grey text-center">
+							<!-- <view class="text-grey text-center">
 								<picker @change="PickerChange($event, item)" :value="pickerVal" :range-key="'FName'" :range="stockList">
 									<view class="picker">
 										<button class="cu-btn sm round bg-green shadow">
 											<text class="cuIcon-homefill"></text>
-											工序仓
+											上工序
 										</button>
 									</view>
 								</picker>
-							</view>
+							</view> -->
 						</view>
 						<view class="move"><view class="bg-red" @tap="del(index, item)">删除</view></view>
 					</view>
@@ -453,10 +453,9 @@ export default {
 				obj.fdCSPId = list[i].positions;
 				obj.uuid = list[i].uuid;
 				obj.fqty = list[i].fqty;
-				obj.FSCStockID = list[i].stockId;
-				if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
+				/* if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
 					result.push(list[i].index);
-				}
+				} */
 				obj.fsourceBillNo = list[i].fsourceBillNo == null || list[i].fsourceBillNo == 'undefined' ? '' : list[i].fsourceBillNo;
 				obj.fsourceEntryID = list[i].fsourceEntryID == null || list[i].fsourceEntryID == 'undefined' ? '' : list[i].fsourceEntryID;
 				obj.fsourceTranType = list[i].fsourceTranType == null || list[i].fsourceTranType == 'undefined' ? '' : list[i].fsourceTranType;
@@ -475,7 +474,7 @@ export default {
 				}
 			}
 				if(typeof(me.form.FCustID)!="undefined" && me.form.FCustID!=''){
-					portData.FCustID = this.form.FCustID;
+					portData.fcustId = this.form.FCustID;
 				}else{
 					this.isClick = false;
 					return uni.showToast({
@@ -490,9 +489,7 @@ export default {
 			portData.fdate = this.form.fdate;
 			portData.fbillerID = this.form.fbillerID;
 			portData.fdeptId = this.form.fdeptID;
-			
 			if (result.length == 0) {
-				
 				production
 					.pickingStockOut(portData)
 					.then(res => {
@@ -524,7 +521,7 @@ export default {
 			} else {
 				uni.showToast({
 					icon: 'none',
-					title: '仓库不允许为空'
+					title: '上工序不允许为空'
 				});
 				this.isClick = false;
 			}
