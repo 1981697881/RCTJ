@@ -121,6 +121,7 @@
 						@touchend="ListTouchEnd"
 						:data-target="'move-box-' + index"
 					>
+					<view style="clear: both;width: 100%;">
 						<view style="clear: both;width: 100%;" class="grid text-left col-2" @tap="showModal2(index, item)" data-target="Modal" data-number="item.number">
 							<view class="text-grey">序号:{{ (item.index = index + 1) }}</view>
 							<view class="text-grey">编码:{{ item.number }}</view>
@@ -131,7 +132,8 @@
 							<view class="text-grey">规格:{{ item.model }}</view>
 							<view class="text-grey">仓位:{{ item.positions }}</view>
 							<view class="text-grey">{{ item.stockName }}</view>
-							<view class="text-grey">
+							</view>
+							<view class="text-grey text-center">
 								<picker @change="PickerChange($event, item)" :value="pickerVal" :range-key="'FName'" :range="stockList">
 									<view class="picker">
 										<button class="cu-btn sm round bg-green shadow">
@@ -356,7 +358,7 @@ export default {
 				res.stockName = res.FDefaultStockName;
 				res.stockId = res.FDefaultStockNumber;
 				res.FIsStockMgr = res.FIsStockMgr;
-				res.fbatchNo = res.batchNo;
+				res.fbatchNo = '';
 				res.number = res.FNumber;
 				res.name = res.FName;
 				res.fqty = 0;
@@ -651,49 +653,44 @@ export default {
 			let batchMsg = '';
 			let cIndex = 0;
 			for (let i in list) {
-				let children = list[i].childrenList;
-				children.forEach((item, index) => {
-					if (item.checked) {
-						cIndex++;
-						let obj = {};
-						obj.fauxqty = item.quantity;
-						obj.fentryId = cIndex;
-						obj.finBillNo = item.FBillNo;
-						obj.fbatchNo = item.FBatchNo;
-						/* if (list[i].FBatchManager) {
-						if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
-							obj.fbatchNo = list[i].fbatchNo;
-							isBatchNo = true;
-						} else {
-							isBatchNo = false;
-							batchMsg = '批号已启用，不允许为空';
-							break;
-						}
+				let obj = {};
+				obj.fauxqty = list[i].quantity;
+				obj.fentryId = list[i].index;
+				obj.finBillNo = this.form.finBillNo;
+				obj.fitemId = list[i].number;
+				if (list[i].FBatchManager) {
+					if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
+						obj.fbatchNo = list[i].fbatchNo;
+						isBatchNo = true;
 					} else {
-						if (list[i].fbatchNo == '' || list[i].fbatchNo == null) {
-							obj.fbatchNo = list[i].fbatchNo;
-							isBatchNo = true;
-						} else {
-							batchMsg = '批号未启用，不允许输入';
-							isBatchNo = false;
-							break;
-						}
+						isBatchNo = false;
+						batchMsg = '批号已启用，不允许为空';
+						break;
 					}
-						obj.fitemId = item.FNumber;
-						obj.fdCSPId = item.FStockPlacename;
-						obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
-						obj.famount = list[i].Famount != null && typeof list[i].Famount != 'undefined' ? list[i].Famount : 0;
-						obj.fsCStockId = item.FStockNumber;
-						/* if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
-						result.push(list[i].index);
-					} */
-						obj.fsourceBillNo = list[i].fsourceBillNo == null || list[i].fsourceBillNo == 'undefined' ? '' : list[i].fsourceBillNo;
-						obj.fsourceEntryId = list[i].fsourceEntryID == null || list[i].fsourceEntryID == 'undefined' ? '' : list[i].fsourceEntryID;
-						obj.fsourceTranType = list[i].fsourceTranType == null || list[i].fsourceTranType == 'undefined' ? '' : list[i].fsourceTranType;
-						obj.funitId = item.FUnitID;
-						array.push(obj);
+				} else {
+					if (list[i].fbatchNo == '' || list[i].fbatchNo == null) {
+						obj.fbatchNo = list[i].fbatchNo;
+						isBatchNo = true;
+					} else {
+						isBatchNo = false;
+						batchMsg = '批号未启用，不允许输入';
+						break;
 					}
-				});
+				}
+				obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
+				obj.famount = list[i].Famount != null && typeof list[i].Famount != 'undefined' ? list[i].Famount : 0;
+				obj.fdCSPId = list[i].positions;
+				obj.uuid = list[i].uuid;
+				obj.fqty = list[i].fqty;
+				obj.fsCStockId = list[i].stockId;
+				if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
+					result.push(list[i].index);
+				}
+				obj.fsourceBillNo = list[i].fsourceBillNo == null || list[i].fsourceBillNo == 'undefined' ? '' : list[i].fsourceBillNo;
+				obj.fsourceEntryID = list[i].fsourceEntryID == null || list[i].fsourceEntryID == 'undefined' ? '' : list[i].fsourceEntryID;
+				obj.fsourceTranType = list[i].fsourceTranType == null || list[i].fsourceTranType == 'undefined' ? '' : list[i].fsourceTranType;
+				obj.funitId = list[i].unitID;
+				array.push(obj);
 			}
 			portData.items = array;
 			portData.ftranType = 24;
@@ -701,9 +698,8 @@ export default {
 			portData.fdate = this.form.fdate;
 			portData.fdeptId = this.form.fdeptID;
 			portData.fbillerID = this.form.fbillerID;
-			console.log(JSON.stringify(portData));
-			/* if (result.length == 0) {
-				if (isBatchNo) { */
+			if (result.length == 0) {
+				if (isBatchNo) {
 			production
 				.pickingStockOut(portData)
 				.then(res => {
@@ -732,7 +728,7 @@ export default {
 					});
 					this.isClick = false;
 				});
-			/* } else {
+			} else {
 					uni.showToast({
 						icon: 'none',
 						title: batchMsg
@@ -745,12 +741,12 @@ export default {
 					title: '仓库不允许为空'
 				});
 				this.isClick = false;
-			} */
+			}
 		},
 		submitCom() {
 			var me = this;
 			if (me.popupForm.positions != '' && me.popupForm.positions != null) {
-				/* basic.selectFdCStockIdByFdCSPId({ fdCSPId: me.popupForm.positions }).then(reso => {
+				basic.selectFdCStockIdByFdCSPId({ fdCSPId: me.popupForm.positions }).then(reso => {
 					if (reso.data != null && reso.data != '') {
 						if (reso.data['FIsStockMgr']) {
 							me.borrowItem.stockName = reso.data['stockName'];
@@ -775,7 +771,7 @@ export default {
 							title: '该库位不存在仓库中！'
 						});
 					}
-				}); */
+				});
 				me.borrowItem.positions = me.popupForm.positions;
 				me.borrowItem.quantity = me.popupForm.quantity;
 				me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
@@ -899,10 +895,12 @@ export default {
 			this.form.fdate = e;
 		},
 		PickerChange(e, item) {
-			this.$set(item, 'stockName', this.stockList[e.detail.value].FName);
-			this.$set(item, 'stockId', this.stockList[e.detail.value].FNumber);
-			this.$set(item, 'positions', '');
-			this.$set(item, 'FIsStockMgr', this.stockList[e.detail.value].FIsStockMgr);
+			let that = this
+			that.$set(item, 'stockName', that.stockList[e.detail.value].FName);
+			that.$set(item, 'stockId', that.stockList[e.detail.value].FNumber);
+			that.$set(item, 'positions', '');
+			that.$set(item, 'FIsStockMgr', that.stockList[e.detail.value].FIsStockMgr);
+			that.$forceUpdate()
 		},
 		scanPosition() {
 			let me = this;

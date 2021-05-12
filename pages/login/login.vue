@@ -91,7 +91,7 @@
 				password: '',
 				positionTop: 0,
 				popupForm: {
-					URL: '',
+					URL: 'http://222.217.74.162:8088/barcode',
 				},
 				isDevtools: false,
 			}

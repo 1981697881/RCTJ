@@ -733,10 +733,12 @@ export default {
 			this.form.fdate = e;
 		},
 		PickerChange(e, item) {
-			this.$set(item, 'stockName', this.stockList[e.detail.value].FName);
-			this.$set(item, 'stockId', this.stockList[e.detail.value].FNumber);
-			this.$set(item, 'positions', '');
-			this.$set(item, 'FIsStockMgr', this.stockList[e.detail.value].FIsStockMgr);
+			let that = this
+			that.$set(item, 'stockName', that.stockList[e.detail.value].FName);
+			that.$set(item, 'stockId', that.stockList[e.detail.value].FNumber);
+			that.$set(item, 'positions', '');
+			that.$set(item, 'FIsStockMgr', that.stockList[e.detail.value].FIsStockMgr);
+			that.$forceUpdate()
 		},
 		scanPosition() {
 			let me = this;

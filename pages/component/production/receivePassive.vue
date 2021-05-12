@@ -460,12 +460,24 @@ export default {
 				obj.fauxqty = list[i].quantity;
 				obj.fentryId = list[i].index;
 				obj.finBillNo = list[i].FBillNo;
-				if (list[i].fbatchNo != null && list[i].fbatchNo != null) {
-					obj.fbatchNo = list[i].fbatchNo;
-					isBatchNo = true;
+				if (list[i].FBatchManager) {
+					if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
+						obj.fbatchNo = list[i].fbatchNo;
+						isBatchNo = true;
+					} else {
+						isBatchNo = false;
+						batchMsg = '批号已启用，不允许为空';
+						break;
+					}
 				} else {
-					isBatchNo = false;
-					break;
+					if (list[i].fbatchNo == '' || list[i].fbatchNo == null) {
+						obj.fbatchNo = list[i].fbatchNo;
+						isBatchNo = true;
+					} else {
+						isBatchNo = false;
+						batchMsg = '批号未启用，不允许输入';
+						break;
+					}
 				}
 				console.log(list[i].stockId)
 				obj.fitemId = list[i].number;
@@ -533,7 +545,7 @@ export default {
 					}else{
 						uni.showToast({
 							icon: 'none',
-							title: '批号不允许为空'
+							title: batchMsg
 						});
 						this.isClick = false;
 					}

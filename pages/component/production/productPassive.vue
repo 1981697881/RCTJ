@@ -5,16 +5,16 @@
 			<block slot="backText">返回</block>
 			<block slot="content">产品入库</block>
 		</cu-custom>
-			<uni-fab
-	    :pattern="pattern"
-	    :horizontal="horizontal"
-		:vertical="vertical"
-		:popMenu="popMenu"
-		distable
-		:direction="direction"
-		 @fabClick="fabClick"
-		 ></uni-fab>
-		 <song-data-picker @search="getMateriel" ref="songData" :localdata="items" popup-title="请选择物料" :openSearch="true" @change="onchange" @nodeclick="onnodeclick"></song-data-picker>
+		<uni-fab :pattern="pattern" :horizontal="horizontal" :vertical="vertical" :popMenu="popMenu" distable :direction="direction" @fabClick="fabClick"></uni-fab>
+		<song-data-picker
+			@search="getMateriel"
+			ref="songData"
+			:localdata="items"
+			popup-title="请选择物料"
+			:openSearch="true"
+			@change="onchange"
+			@nodeclick="onnodeclick"
+		></song-data-picker>
 		<view class="box getheight">
 			<view class="cu-bar bg-white solid-bottom" style="height: 60upx;">
 				<view class="action">
@@ -97,14 +97,14 @@
 									<input name="input" type="digit" style="border-bottom: 1px solid;" v-model="popupForm.quantity" />
 								</view>
 							</view>
-						</view><view class="flex">
+						</view>
+						<view class="flex">
 							<view class="flex-sub">
 								<view class="cu-form-group">
 									<view class="title">片数:</view>
 									<input name="input" style="border-bottom: 1px solid;" v-model="popupForm.fqty" />
 								</view>
 							</view>
-							
 						</view>
 					</view>
 					<!-- <view class="cu-item" style="width: 100%;">
@@ -335,15 +335,11 @@ export default {
 	},
 	methods: {
 		onchange(e) {
-			let reso = e.detail.value
-			let that = this
+			let reso = e.detail.value;
+			let that = this;
 			let number = 0;
 			for (let i in that.cuIList) {
-				if (
-					reso['number'] == that.cuIList[i]['number'] &&
-					reso['FDefaultStockNumber'] == that.cuIList[i]['stockId'] &&
-					reso['batchNo'] == that.cuIList[i]['fbatchNo']
-				) {
+				if (reso['number'] == that.cuIList[i]['number'] && reso['FDefaultStockNumber'] == that.cuIList[i]['stockId'] && reso['batchNo'] == that.cuIList[i]['fbatchNo']) {
 					that.cuIList[i]['quantity'] = parseFloat(that.cuIList[i]['quantity']) + 1;
 					number++;
 					break;
@@ -365,13 +361,13 @@ export default {
 				that.form.bNum = that.cuIList.length;
 			}
 		},
-		getMateriel(val,callback){
-			console.log('進入')
+		getMateriel(val, callback) {
+			console.log('進入');
 			basic
 				.getItemList({ name: val })
 				.then(res => {
 					if (res.success) {
-						callback(res.data)
+						callback(res.data);
 					}
 				})
 				.catch(err => {
@@ -458,8 +454,7 @@ export default {
 				obj.fentryId = list[i].index;
 				obj.finBillNo = this.form.finBillNo;
 				obj.fitemId = list[i].number;
-				obj.fbatchNo = list[i].fbatchNo;
-				/* if (list[i].FBatchManager) {
+				if (list[i].FBatchManager) {
 					if (list[i].fbatchNo != '' && list[i].fbatchNo != null) {
 						obj.fbatchNo = list[i].fbatchNo;
 						isBatchNo = true;
@@ -477,7 +472,7 @@ export default {
 						batchMsg = '批号未启用，不允许输入';
 						break;
 					}
-				} */
+				}
 				obj.fauxprice = list[i].Fauxprice != null && typeof list[i].Fauxprice != 'undefined' ? list[i].Fauxprice : 0;
 				obj.famount = list[i].Famount != null && typeof list[i].Famount != 'undefined' ? list[i].Famount : 0;
 				obj.fdCSPId = list[i].positions;
@@ -493,15 +488,14 @@ export default {
 				obj.funitId = list[i].unitID;
 				array.push(obj);
 			}
-			if(me.customItemList.length>0){
-				if(typeof(me.form.fsupplyId)!="undefined" && me.form.fsupplyId!=''){
-					
-				}else{
+			if (me.customItemList.length > 0) {
+				if (typeof me.form.fsupplyId != 'undefined' && me.form.fsupplyId != '') {
+				} else {
 					this.isClick = false;
 					return uni.showToast({
-					icon: 'none',
-					title: '机台不允许为空'
-				}); 
+						icon: 'none',
+						title: '机台不允许为空'
+					});
 				}
 			}
 			portData.items = array;
@@ -512,35 +506,42 @@ export default {
 			portData.fbillerID = this.form.fbillerID;
 			portData.fdeptId = this.form.fdeptID;
 			if (result.length == 0) {
-				
-				production
-					.productStockIn(portData)
-					.then(res => {
-						if (res.success) {
-							this.cuIList = [];
-							uni.showToast({
-								icon: 'success',
-								title: res.msg
-							});
-							this.form.bNum = 0;
-							this.initMain();
-							if (this.isOrder) {
-								setTimeout(function() {
-									uni.$emit('handleBack', { startDate: me.startDate, endDate: me.endDate, source: me.source });
-									uni.navigateBack({
-										url: '../production/productActive'
-									});
-								}, 1000);
+				if (isBatchNo) {
+					production
+						.productStockIn(portData)
+						.then(res => {
+							if (res.success) {
+								this.cuIList = [];
+								uni.showToast({
+									icon: 'success',
+									title: res.msg
+								});
+								this.form.bNum = 0;
+								this.initMain();
+								if (this.isOrder) {
+									setTimeout(function() {
+										uni.$emit('handleBack', { startDate: me.startDate, endDate: me.endDate, source: me.source });
+										uni.navigateBack({
+											url: '../production/productActive'
+										});
+									}, 1000);
+								}
 							}
-						}
-					})
-					.catch(err => {
-						uni.showToast({
-							icon: 'none',
-							title: err.msg
+						})
+						.catch(err => {
+							uni.showToast({
+								icon: 'none',
+								title: err.msg
+							});
+							this.isClick = false;
 						});
-						this.isClick = false;
+				} else {
+					uni.showToast({
+						icon: 'none',
+						title: batchMsg
 					});
+					this.isClick = false;
+				}
 			} else {
 				uni.showToast({
 					icon: 'none',
@@ -585,19 +586,11 @@ export default {
 						title: '仓位已启用，请输入仓位！'
 					});
 				} else {
-					if(me.popupForm.fqty !='' && typeof(me.popupForm.fqty) !="undefined"){
-						me.borrowItem.positions = '';
-						me.borrowItem.quantity = me.popupForm.quantity;
-						me.borrowItem.fqty = me.popupForm.fqty;
-						me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
-						me.modalName2 = null;
-					}else{
-						return uni.showToast({
-							icon: 'none',
-							title: '请输入片数！'
-						});
-					}
-					
+					me.borrowItem.positions = '';
+					me.borrowItem.quantity = me.popupForm.quantity;
+					me.borrowItem.fqty = me.popupForm.fqty;
+					me.borrowItem.fbatchNo = me.popupForm.fbatchNo;
+					me.modalName2 = null;
 				}
 			}
 		},
@@ -642,7 +635,8 @@ export default {
 			}
 			if (item.quantity == null || typeof item.quantity == 'undefined') {
 				item.quantity = '';
-			}if (item.fqty == null || typeof item.fqty == 'undefined') {
+			}
+			if (item.fqty == null || typeof item.fqty == 'undefined') {
 				item.fqty = '';
 			}
 			this.popupForm = {
@@ -712,10 +706,12 @@ export default {
 			this.form.fdate = e;
 		},
 		PickerChange(e, item) {
-			this.$set(item, 'stockName', this.stockList[e.detail.value].FName);
-			this.$set(item, 'stockId', this.stockList[e.detail.value].FNumber);
-			this.$set(item, 'positions', '');
-			this.$set(item, 'FIsStockMgr', this.stockList[e.detail.value].FIsStockMgr);
+			let that = this
+			that.$set(item, 'stockName', that.stockList[e.detail.value].FName);
+			that.$set(item, 'stockId', that.stockList[e.detail.value].FNumber);
+			that.$set(item, 'positions', '');
+			that.$set(item, 'FIsStockMgr', that.stockList[e.detail.value].FIsStockMgr);
+			that.$forceUpdate()
 		},
 		scanPosition() {
 			let me = this;
@@ -742,7 +738,7 @@ export default {
 				this.$refs.songData.handleInput();
 			});
 		},
-	 // ListTouch触摸开始
+		// ListTouch触摸开始
 		ListTouchStart(e) {
 			this.listTouchStart = e.touches[0].pageX;
 		},

@@ -453,6 +453,7 @@ export default {
 				obj.fdCSPId = list[i].positions;
 				obj.uuid = list[i].uuid;
 				obj.fqty = list[i].fqty;
+				
 				/* if (list[i].stockId == null || typeof list[i].stockId == 'undefined') {
 					result.push(list[i].index);
 				} */
@@ -479,7 +480,7 @@ export default {
 					this.isClick = false;
 					return uni.showToast({
 					icon: 'none',
-					title: '工序部门不允许为空'
+					title: '上工序不允许为空'
 				}); 
 				}
 			portData.items = array;
