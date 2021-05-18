@@ -9,5 +9,24 @@ export default {
             },
 			data: params
         });
-    }
+    },
+	//采购待审列表
+	poorderMqList(params) {
+        return Request().post('/productWork/poorderMqList', {
+            header: {
+				contentType: 'application/json',
+				accept: '*/*'
+            },
+			data: params
+        });
+    },//采购待审明细
+	poorderDqList(params) {
+        return Request().post('/productWork/poorderDqList', {
+            header: {
+				contentType: 'application/json',
+				accept: '*/*'
+            },
+			data: params
+        });
+    },
 };

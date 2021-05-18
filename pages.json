@@ -200,6 +200,14 @@
 		{
 			"path": "pages/component/workshop/reportDetails",
 			"style": {}
+		},
+		{
+			"path": "pages/component/approval/procurementApproval",
+			"style": {}
+		},
+		{
+			"path": "pages/component/approval/procurementApprovalInfo",
+			"style": {}
 		}
 	],
 	"globalStyle": {
