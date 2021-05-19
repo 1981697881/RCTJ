@@ -153,7 +153,7 @@ export default {
 				Fbillno: item.Fbillno,
 				Fdept: item.FdetpName,
 				Fname: item.Fusername,
-				Fyn: 2,
+				Fyn: 1,
 				Fmark: item.opinion,
 			}
 			procurement
@@ -180,7 +180,7 @@ export default {
 			 	Fbillno: item.Fbillno,
 			 	Fdept: item.FdetpName,
 			 	Fname: item.Fusername,
-			 	Fyn: 1,
+			 	Fyn: 0,
 			 	Fmark: item.opinion,
 			 }
 			 procurement

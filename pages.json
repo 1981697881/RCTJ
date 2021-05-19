@@ -27,6 +27,9 @@
 		{
 			"path": "pages/component/production",
 			"style": {}
+		},{
+			"path": "pages/component/approval",
+			"style": {}
 		},
 		{
 			"path": "pages/component/procurement",

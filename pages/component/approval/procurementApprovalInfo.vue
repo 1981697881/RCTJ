@@ -168,7 +168,7 @@ export default {
 				Fbillno: me.form.Fbillno,
 				Fdept: me.form.FdetpName,
 				Fname: me.form.Fusername,
-				Fyn: 2,
+				Fyn: 1,
 				Fmark: me.form.opinion,
 			}
 			procurement
@@ -201,7 +201,7 @@ export default {
 			 	Fbillno: me.form.Fbillno,
 			 	Fdept: me.form.FdetpName,
 			 	Fname: me.form.Fusername,
-			 	Fyn: 1,
+			 	Fyn: 0,
 			 	Fmark: me.form.opinion,
 			 }
 			 procurement
