@@ -28,5 +28,14 @@ export default {
             },
 			data: params
         });
+    },//采购待审审核
+	poorderUpdate(params) {
+        return Request().post('/productWork/poorderUpdate', {
+            header: {
+				contentType: 'application/json',
+				accept: '*/*'
+            },
+			data: params
+        });
     },
 };

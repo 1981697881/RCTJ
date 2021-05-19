@@ -25,13 +25,13 @@
 							<view class="text-grey" style="width: 100%;">
 								<view class="cu-form-group align-start" style="padding-left: 0;">
 									<view class="title" style="margin: 0;">审批意见：</view>
-									<textarea maxlength="-1" style="border: 1px solid;margin: 0;" @input="textareaBInput" placeholder="请输入"></textarea>
+									<textarea style="border: 1px solid;margin: 0;" v-model="item.opinion" placeholder="请输入"></textarea>
 								</view>
 							</view>
 							<view class="text-grey" style="width: 100%;">
 								<view class="padding flex flex-wrap justify-between align-center bg-white">
-									<button class="cu-btn round bg-blue" @tap="$manyCk(saveData)">同意</button>
-									<button class="cu-btn round bg-red" @tap="$manyCk(cannelList)">不同意</button>
+									<button class="cu-btn round bg-blue" @tap="$manyCk(saveData(index, item))">同意</button>
+									<button class="cu-btn round bg-red" @tap="$manyCk(cannelList(index, item))">不同意</button>
 								</view>
 							</view>
 						</view>
@@ -147,11 +147,59 @@ export default {
 			});
 	},
 	methods: {
-		saveData(){
-			
+		saveData(index,item){
+			const me = this;
+			let obj = {
+				Fbillno: item.Fbillno,
+				Fdept: item.FdetpName,
+				Fname: item.Fusername,
+				Fyn: 2,
+				Fmark: item.opinion,
+			}
+			procurement
+				.poorderUpdate(obj)
+				.then(res => {
+					if (res.success) {
+						uni.showToast({
+							icon: 'success',
+							title: err.msg
+						});
+						me.getNewsList()
+					}
+				})
+				.catch(err => {
+					uni.showToast({
+						icon: 'none',
+						title: err.msg
+					});
+				});
 		},
-		 cannelList(){
-			 
+		 cannelList(index,item){
+			 const me = this;
+			 let obj = {
+			 	Fbillno: item.Fbillno,
+			 	Fdept: item.FdetpName,
+			 	Fname: item.Fusername,
+			 	Fyn: 1,
+			 	Fmark: item.opinion,
+			 }
+			 procurement
+			 	.poorderUpdate(obj)
+			 	.then(res => {
+			 		if (res.success) {
+						uni.showToast({
+							icon: 'success',
+							title: err.msg
+						});
+						me.getNewsList()
+			 		}
+			 	})
+			 	.catch(err => {
+			 		uni.showToast({
+			 			icon: 'none',
+			 			title: err.msg
+			 		});
+			 	});
 		 },
 		showList(index, item){
 			uni.navigateTo({
@@ -178,8 +226,10 @@ export default {
 				.poorderMqList(this.qFilter())
 				.then(res => {
 					if (res.success) {
-						console.log(res);
-						this.cuIconList = res.data.list;
+						res.data.forEach((item)=>{
+							item.opinion = ''
+						})
+						this.cuIconList = [...res.data];
 						uni.hideNavigationBarLoading();
 						uni.stopPullDownRefresh(); //得到数据后停止下拉刷新
 					}

@@ -25,9 +25,9 @@ const addUser = function(userInfo) {
 		password: userInfo.password,
 		userId: userInfo.userId,
 		empId: userInfo.empId,
-		deptName: userInfo.deptName,
+		deptName: userInfo.fdeptName,
 		deptID: userInfo.deptID,
-		deptNumber: userInfo.deptNumber,
+		deptNumber: userInfo.fdeptNumber,
 		username: userInfo.username,
 	});
 	uni.setStorageSync(USERS_KEY, JSON.stringify(users));

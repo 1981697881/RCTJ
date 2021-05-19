@@ -56,12 +56,12 @@
 			</view>
 			<view class="cu-bar tabbar shadow foot flex-wrap">
 				<view class="cu-bar bg-white solid-bottom" style="min-height: 40upx;background-color: inherit;width: 100%;">
-						<view class="title padding-left" style="margin: 0;">合计预算金额：</view>
+						<view class="title padding-left" style="margin: 0;">合计预算金额：￥{{countMoney}}</view>
 						<text>{{ form.finBillNo }}</text>
 				</view>
 				<view class="cu-form-group align-start margin" style="background-color: inherit; padding-left: 0;width: 100%;">
 					<view class="title" style="margin: 0;">审批意见：</view>
-					<textarea maxlength="-1" style="border: 1px solid;margin: 0;" @input="textareaBInput" placeholder="请输入"></textarea>
+					<textarea maxlength="-1" style="border: 1px solid;margin: 0;" v-model="form.opinion" placeholder="请输入"></textarea>
 				</view>
 				<view class="box text-center">
 					<button :disabled="isClick" class="cu-btn bg-blue shadow-blur round lg" style="width: 40%;margin-right: 10%;" @tap="$manyCk(saveData)">同意</button>
@@ -87,6 +87,15 @@ export default {
 			loadModal: false,
 			onoff: true
 		};
+	},
+	computed: {
+		countMoney(){
+			let number = 0
+			this.cuIconList.forEach((item)=>{
+				number = (number*100+parseFloat(item.Famount)*100) /100
+			})
+			return number
+		}
 	},
 	onReady: function() {
 		var me = this;
@@ -132,27 +141,7 @@ export default {
 				.poorderDqList(me.qFilter())
 				.then(res => {
 					if (res.success) {
-						let data = res.data.list;
-						for (let i in data) {
-							me.cuIList.push({
-								Fdate: data[i].Fdate,
-								number: data[i].FItemNumber,
-								name: data[i].FItemName,
-								model: data[i].FModel,
-								FNoteType: data[i].FNoteType,
-								quantity: data[i].Fauxqty,
-								Fauxqty: data[i].Fauxqty,
-								FBatchManager: data[i].FBatchManager,
-								fsourceBillNo: data[i].FBillNo,
-								Fauxprice: data[i].Fauxprice,
-								Famount: data[i].Famount,
-								fsourceBillNo: data[i].FBillNo,
-								fsourceTranType: data[i].FTranType,
-								fsourceEntryID: data[i].FEntryID,
-								unitID: data[i].FUnitNumber,
-								unitName: data[i].FUnitName
-							});
-						}
+						me.cuIconList = res.data;
 					}
 				})
 				.catch(err => {
@@ -175,21 +164,68 @@ export default {
 		},
 		saveData(){
 			let me = this
-			setTimeout(function() {
-				uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
-				uni.navigateBack({
-					url: '../approval/procurementApprovalInfo'
+			let obj = {
+				Fbillno: me.form.Fbillno,
+				Fdept: me.form.FdetpName,
+				Fname: me.form.Fusername,
+				Fyn: 2,
+				Fmark: me.form.opinion,
+			}
+			procurement
+				.poorderUpdate(obj)
+				.then(res => {
+					if (res.success) {
+						uni.showToast({
+							icon: 'success',
+							title: err.msg
+						});
+						setTimeout(function() {
+							uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
+							uni.navigateBack({
+								url: '../approval/procurementApprovalInfo'
+							});
+						}, 1000);
+					}
+				})
+				.catch(err => {
+					uni.showToast({
+						icon: 'none',
+						title: err.msg
+					});
 				});
-			}, 1000);
+			
 		},
 		 cannelList(){
 			 let me = this
-			 setTimeout(function() {
-			 	uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
-			 	uni.navigateBack({
-			 		url: '../approval/procurementApprovalInfo'
+			 let obj = {
+			 	Fbillno: me.form.Fbillno,
+			 	Fdept: me.form.FdetpName,
+			 	Fname: me.form.Fusername,
+			 	Fyn: 1,
+			 	Fmark: me.form.opinion,
+			 }
+			 procurement
+			 	.poorderUpdate(obj)
+			 	.then(res => {
+			 		if (res.success) {
+			 			uni.showToast({
+			 				icon: 'success',
+			 				title: err.msg
+			 			});
+			 			setTimeout(function() {
+			 				uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
+			 				uni.navigateBack({
+			 					url: '../approval/procurementApprovalInfo'
+			 				});
+			 			}, 1000);
+			 		}
+			 	})
+			 	.catch(err => {
+			 		uni.showToast({
+			 			icon: 'none',
+			 			title: err.msg
+			 		});
 			 	});
-			 }, 1000);
 		 },
 	}
 };
