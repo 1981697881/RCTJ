@@ -15,23 +15,23 @@
 								<view class="text-grey">申请部门:{{ item.FdetpName }}</view>
 								<view class="text-grey">申请人员:{{ item.Fusername }}</view>
 								<view class="text-grey">申请单号:{{ item.Fbillno }}</view>
-								<view class="text-grey">预算金额:{{ item.Fallamount }}</view>
+								<view class="text-grey">预算金额:{{ item.Famount }}</view>
 								<view class="text-grey" style="width: 100%;">供应商:{{ item.Fsupplyname }}</view>
 								<view class="text-grey" style="width: 100%;">备注:{{ item.Fmark }}</view>
-								<view class="text-grey" style="width: 100%;">申请人意见:{{ item.FUnitName }}</view>
-								<view class="text-grey" style="width: 100%;">车间主任意见:{{ item.FLabelNumber }}</view>
-								<view class="text-grey" style="width: 100%;">仓库意见:{{ item.FBUUnitName }}</view>
+								<view class="text-grey" style="width: 100%;">申请人意见:{{ item.Fmark1 }}</view>
+								<view class="text-grey" style="width: 100%;">车间主任意见:{{ item.Fmark2 }}</view>
+								<view class="text-grey" style="width: 100%;">仓库意见:{{ item.Fmark3 }}</view>
 							</view>
 							<view class="text-grey" style="width: 100%;">
 								<view class="cu-form-group align-start" style="padding-left: 0;">
 									<view class="title" style="margin: 0;">审批意见：</view>
-									<textarea style="border: 1px solid;margin: 0;" v-model="item.opinion" placeholder="请输入"></textarea>
+									<textarea style="border: 1px solid #ccc;margin: 0;" v-model="item.opinion" placeholder="请输入"></textarea>
 								</view>
 							</view>
 							<view class="text-grey" style="width: 100%;">
 								<view class="padding flex flex-wrap justify-between align-center bg-white">
-									<button class="cu-btn round bg-blue" @tap="$manyCk(saveData(index, item))">同意</button>
-									<button class="cu-btn round bg-red" @tap="$manyCk(cannelList(index, item))">不同意</button>
+									<button class="cu-btn round bg-red lg" style="width: 40%;margin-right: 10%;" @tap="$manyCk(cannelList(index, item))">不同意</button>
+									<button class="cu-btn round bg-blue lg" style="width: 40%;" @tap="$manyCk(saveData(index, item))">同意</button>
 								</view>
 							</view>
 						</view>
@@ -100,7 +100,7 @@ export default {
 		this.getNewsList();
 	},
 	// 上拉加载
-	onReachBottom: function() {
+	onReachBottom() {
 		this.isShow = false;
 		page++; //每触底一次 page +1
 		// console.log(this.cuIconList.length);
@@ -110,18 +110,18 @@ export default {
 		}
 		this.loadingType = 1;
 		// console.log(page);
-		uni.showNavigationBarLoading(); //显示加载动画
+		/* uni.showNavigationBarLoading(); //显示加载动画 */
 		let obj = this.qFilter();
 		obj.pageNum = page;
 		procurement
 			.poorderMqList(obj)
 			.then(res => {
 				if (res.success) {
-					console.log(res);
 					if (this.cuIconList.length == res.data.total) {
 						//没有数据
 						this.loadingType = 2;
 						uni.hideNavigationBarLoading(); //关闭加载动画
+						uni.stopPullDownRefresh(); //得到数据后停止下拉刷新
 						return false;
 					}
 					if (res.data.list.length > 0) {
@@ -151,8 +151,8 @@ export default {
 			const me = this;
 			let obj = {
 				Fbillno: item.Fbillno,
-				Fdept: item.FdetpName,
-				Fname: item.Fusername,
+				Fdept: service.getUsers()[0].deptName,
+				Fname: service.getUsers()[0].username,
 				Fyn: 1,
 				Fmark: item.opinion,
 			}
@@ -160,11 +160,12 @@ export default {
 				.poorderUpdate(obj)
 				.then(res => {
 					if (res.success) {
+						me.getNewsList()
 						uni.showToast({
 							icon: 'success',
-							title: err.msg
+							title: res.msg
 						});
-						me.getNewsList()
+						
 					}
 				})
 				.catch(err => {
@@ -178,8 +179,8 @@ export default {
 			 const me = this;
 			 let obj = {
 			 	Fbillno: item.Fbillno,
-			 	Fdept: item.FdetpName,
-			 	Fname: item.Fusername,
+			 	Fdept: service.getUsers()[0].deptName,
+			 	Fname: service.getUsers()[0].username,
 			 	Fyn: 0,
 			 	Fmark: item.opinion,
 			 }
@@ -189,7 +190,7 @@ export default {
 			 		if (res.success) {
 						uni.showToast({
 							icon: 'success',
-							title: err.msg
+							title: res.msg
 						});
 						me.getNewsList()
 			 		}
@@ -203,7 +204,7 @@ export default {
 		 },
 		showList(index, item){
 			uni.navigateTo({
-				url: '../approval/procurementApprovalInfo?Fbillno='+item.Fbillno+'&FdetpName='+item.FdetpName+'&Fdate='+item.Fdate+'&Fusername='+item.Fusername+'&Fsupplyname='+item.Fsupplyname+'&Fmark='+item.Fmark
+				url: '../approval/procurementApprovalInfo?Fbillno='+item.Fbillno+'&FdetpName='+item.FdetpName+'&Fdate='+item.Fdate+'&Fusername='+item.Fusername+'&Fsupplyname='+item.Fsupplyname+'&Fmark='+item.Fmark+'&Famount='+item.Famount
 			});
 		},
 		// 查询条件过滤
@@ -212,7 +213,7 @@ export default {
 			this.keyword != null && this.keyword != '' ? (obj.name = this.keyword) : null;
 			obj.pageSize = 20;
 			obj.pageNum = 1;
-			obj.Fname = service.getUsers()[0].account;
+			obj.Fname = service.getUsers()[0].username;
 			obj.Fdept = service.getUsers()[0].deptName;
 			return obj;
 		},

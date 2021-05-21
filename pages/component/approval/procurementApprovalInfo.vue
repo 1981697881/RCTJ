@@ -37,6 +37,16 @@
 					<text>{{ form.Fmark }}</text>
 				</view>
 			</view>
+			<view class="cu-bar bg-white solid-bottom" style="min-height: 40upx;">
+				<view class="action">
+					合计预算金额:
+					<text>{{ form.Famount }}</text>
+				</view>
+			</view>
+			<view class="cu-form-group align-start" style="padding: 0;padding-top:10rpx">
+				<view class="title" style="margin: 0;">审批意见：</view>
+				<textarea maxlength="-1" style="border: 1px solid #ccc;margin: 0;margin-right: 10rpx;" v-model="form.opinion" placeholder="请输入"></textarea>
+			</view>
 		</view>
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
 			<view v-for="(item, index) in cuIconList" :key="index">
@@ -55,17 +65,9 @@
 				</view>
 			</view>
 			<view class="cu-bar tabbar shadow foot flex-wrap">
-				<view class="cu-bar bg-white solid-bottom" style="min-height: 40upx;background-color: inherit;width: 100%;">
-						<view class="title padding-left" style="margin: 0;">合计预算金额：￥{{countMoney}}</view>
-						<text>{{ form.finBillNo }}</text>
-				</view>
-				<view class="cu-form-group align-start margin" style="background-color: inherit; padding-left: 0;width: 100%;">
-					<view class="title" style="margin: 0;">审批意见：</view>
-					<textarea maxlength="-1" style="border: 1px solid;margin: 0;" v-model="form.opinion" placeholder="请输入"></textarea>
-				</view>
 				<view class="box text-center">
-					<button :disabled="isClick" class="cu-btn bg-blue shadow-blur round lg" style="width: 40%;margin-right: 10%;" @tap="$manyCk(saveData)">同意</button>
-					<button class="cu-btn bg-red shadow-blur round lg" style="width: 40%;" @tap="$manyCk(cannelList)">不同意</button>
+					<button :disabled="isClick" class="cu-btn bg-red shadow-blur round lg" style="width: 40%;margin-right: 10%;" @tap="$manyCk(cannelList)">不同意</button>
+					<button class="cu-btn bg-blue shadow-blur round lg" style="width: 40%;" @tap="$manyCk(saveData)">同意</button>
 				</view>
 			</view>
 		</scroll-view>
@@ -74,6 +76,7 @@
 
 <script>
 import procurement from '@/api/procurement';
+import service from '@/service.js';
 export default {
 	data() {
 		return {
@@ -89,13 +92,7 @@ export default {
 		};
 	},
 	computed: {
-		countMoney(){
-			let number = 0
-			this.cuIconList.forEach((item)=>{
-				number = (number*100+parseFloat(item.Famount)*100) /100
-			})
-			return number
-		}
+		
 	},
 	onReady: function() {
 		var me = this;
@@ -103,19 +100,14 @@ export default {
 			success: function(res) {
 				// res - 各种参数
 				let info = uni.createSelectorQuery().select('.getheight');
-				let foot = uni.createSelectorQuery().select('.foot');
 				let customHead = uni.createSelectorQuery().select('.customHead');
 				var infoHeight = 0;
-				var footHeight = 0;
 				var headHeight = 0;
 				info.boundingClientRect(function(data) {
 					//data - 各种参数
 					infoHeight = data.height;
 				}).exec();
-				foot.boundingClientRect(function(data) {
-					//data - 各种参数
-					footHeight = data.height;
-				}).exec();
+				
 				customHead
 					.boundingClientRect(function(data) {
 						//data - 各种参数
@@ -123,7 +115,7 @@ export default {
 					})
 					.exec();
 				setTimeout(function() {
-					me.pageHeight = res.windowHeight - infoHeight- footHeight - headHeight;
+					me.pageHeight = res.windowHeight - infoHeight - headHeight -40;
 				}, 1000);
 			}
 		});
@@ -134,6 +126,7 @@ export default {
 			this.form.Fbillno = option.Fbillno;
 			this.form.FdetpName = option.FdetpName;
 			this.form.Fdate = option.Fdate;
+			this.form.Famount = option.Famount;
 			this.form.Fusername = option.Fusername;
 			this.form.Fsupplyname = option.Fsupplyname;
 			this.form.Fmark = option.Fmark;
@@ -158,29 +151,29 @@ export default {
 			let obj = {};
 			this.keyword != null && this.keyword != '' ? (obj.name = this.keyword) : null;
 			obj.pageSize = 20;
-			obj.Fbillno = this.form.Fbillno
+			obj.Fbillno = this.form.Fbillno;
 			obj.pageNum = 1;
 			return obj;
 		},
-		saveData(){
-			let me = this
+		saveData() {
+			let me = this;
 			let obj = {
 				Fbillno: me.form.Fbillno,
-				Fdept: me.form.FdetpName,
-				Fname: me.form.Fusername,
+				Fdept: service.getUsers()[0].deptName,
+				Fname: service.getUsers()[0].username,
 				Fyn: 1,
-				Fmark: me.form.opinion,
-			}
+				Fmark: me.form.opinion
+			};
 			procurement
 				.poorderUpdate(obj)
 				.then(res => {
 					if (res.success) {
 						uni.showToast({
 							icon: 'success',
-							title: err.msg
+							title: res.msg
 						});
 						setTimeout(function() {
-							uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
+							uni.$emit('handleBack', { Fbillno: me.form.Fbillno });
 							uni.navigateBack({
 								url: '../approval/procurementApprovalInfo'
 							});
@@ -193,46 +186,45 @@ export default {
 						title: err.msg
 					});
 				});
-			
 		},
-		 cannelList(){
-			 let me = this
-			 let obj = {
-			 	Fbillno: me.form.Fbillno,
-			 	Fdept: me.form.FdetpName,
-			 	Fname: me.form.Fusername,
-			 	Fyn: 0,
-			 	Fmark: me.form.opinion,
-			 }
-			 procurement
-			 	.poorderUpdate(obj)
-			 	.then(res => {
-			 		if (res.success) {
-			 			uni.showToast({
-			 				icon: 'success',
-			 				title: err.msg
-			 			});
-			 			setTimeout(function() {
-			 				uni.$emit('handleBack', { Fbillno: me.form.Fbillno});
-			 				uni.navigateBack({
-			 					url: '../approval/procurementApprovalInfo'
-			 				});
-			 			}, 1000);
-			 		}
-			 	})
-			 	.catch(err => {
-			 		uni.showToast({
-			 			icon: 'none',
-			 			title: err.msg
-			 		});
-			 	});
-		 },
+		cannelList() {
+			let me = this;
+			let obj = {
+				Fbillno: me.form.Fbillno,
+				Fdept: service.getUsers()[0].deptName,
+				Fname: service.getUsers()[0].username,
+				Fyn: 0,
+				Fmark: me.form.opinion
+			};
+			procurement
+				.poorderUpdate(obj)
+				.then(res => {
+					if (res.success) {
+						uni.showToast({
+							icon: 'success',
+							title: res.msg
+						});
+						setTimeout(function() {
+							uni.$emit('handleBack', { Fbillno: me.form.Fbillno });
+							uni.navigateBack({
+								url: '../approval/procurementApprovalInfo'
+							});
+						}, 1000);
+					}
+				})
+				.catch(err => {
+					uni.showToast({
+						icon: 'none',
+						title: err.msg
+					});
+				});
+		}
 	}
 };
 </script>
 
 <style>
-.action{
+.action {
 	margin-left: 0 !important;
 }
 .box {
