@@ -7,7 +7,7 @@
 		<scroll-view scroll-y class="page" :style="{ height: pageHeight + 'px' }">
 			<view v-for="(item, index) in cuIconList" :key="index">
 				<view class="cu-list menu-avatar">
-					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 560upx;">
+					<view class="cu-item" style="width: 100%;margin-top: 2px;height: 680upx;">
 						<view style="clear: both;width: 100%;">
 							<view style="clear: both;width: 100%;" class="grid text-left col-2" data-target="Modal" data-number="item.number" @tap="$manyCk(showList(index, item))">
 								<view class="text-grey">序号:{{ (item.index = index + 1) }}</view>
@@ -21,6 +21,8 @@
 								<view class="text-grey" style="width: 100%;">申请人意见:{{ item.Fmark1 }}</view>
 								<view class="text-grey" style="width: 100%;">车间主任意见:{{ item.Fmark2 }}</view>
 								<view class="text-grey" style="width: 100%;">仓库意见:{{ item.Fmark3 }}</view>
+								<view class="text-grey" style="width: 100%;">会计意见:{{ item.Fmark4 }}</view>
+								<view class="text-grey" style="width: 100%;">主管意见:{{ item.Fmark5 }}</view>
 							</view>
 							<view class="text-grey" style="width: 100%;">
 								<view class="cu-form-group align-start" style="padding-left: 0;">
